@@ -659,3 +659,97 @@ input:checked + .slider {
 input:checked + .slider:before {
   transform: translateX(14px);
 }
+
+.screening-test-table {
+  width: 75%;
+  margin: 20px auto;
+  border-collapse: collapse; 
+}
+
+.screening-test-table th,
+.screening-test-table td {
+  padding: 8px; 
+  border: 1px solid #ccc; 
+  text-align: center; 
+  vertical-align: middle; 
+}
+
+.screening-test-table th {
+  background-color: transparent; 
+  color: #333; 
+  font-weight: bold; 
+  width: 100%;
+}
+
+.screening-test-table tr:nth-child(even) {
+  background-color: transparent;
+}
+
+.screening-test-table tr:hover {
+  background-color: transparent;
+}
+
+.screening-test-table td {
+  color: #333; 
+}
+
+.screening-test-table th:first-child {
+  width: 15%;
+}
+
+.screening-test-table th:nth-child(2) {
+  width: 65%; 
+}
+
+.screening-test-table th:nth-child(3) {
+  width: 40%; 
+}
+
+/* SECOND TABLE */
+.secondtable {
+  width: 75%; 
+  margin: 20px auto;
+  border-collapse: collapse; 
+}
+
+.secondtable th,
+.secondtable td {
+  padding: 8px; 
+  border: 1px solid #ccc; 
+  text-align: center; 
+  vertical-align: middle; 
+}
+
+.secondtable th {
+  background-color: transparent; 
+  color: #333; 
+  font-weight: bold; 
+}
+
+.secondtable tr:nth-child(even) {
+  background-color: transparent;
+}
+
+.secondtable tr:hover {
+  background-color: transparent;
+}
+
+.secondtable td {
+  color: #333; 
+}
+
+.secondtable th:first-child {
+  width: 13%;
+}
+
+.secondtable th:nth-child(2) {
+  width: 50%; 
+}
+
+.secondtable th:nth-child(3) {
+  width: 8%; 
+}
+
+.secondtable th:nth-child(4) {
+  width: 8%; 
+}
