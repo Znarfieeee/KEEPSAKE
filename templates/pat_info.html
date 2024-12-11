@@ -69,6 +69,55 @@
                     </div>
                 </div>
             </div>
+            <div class="screeningtest-info">
+                <div class="pat-detail-title">SCREENING TEST</div>
+                <table class="screening-test-table">
+                    <thead>
+                        <tr>
+                            <th>DATE</th>
+                            <th>DESCRIPTION</th>
+                            <th>REMARKS</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for test in test_data %}
+                            <tr>
+                                <td>{{ test.date or 'N/A' }}</td>
+                                <td>{{ test.description or 'N/A' }}</td>
+                                <td>{{ test.remarks or 'N/A' }}</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                <table class="secondtable">
+                    <thead>
+                        <tr>
+                            <th>DATE</th>
+                            <th>DESCRIPTION</th>
+                            <th>RIGHT</th>
+                            <th>LEFT</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            {% for test in htest %}
+                                <td>{{ test.date or 'N/A' }}</td>
+                                <td>{{ test.description or 'N/A' }}</td>
+                                <td>{{ test.right_ear or 'N/A' }}</td>
+                                <td>{{ test.left_ear or 'N/A' }}</td>
+                            {% endfor %}
+                        </tr>
+                        <tr>
+                            {% for test in ptest %}
+                                <td>{{ test.date or 'N/A' }}</td>
+                                <td>{{ test.description or 'N/A' }}</td>
+                                <td>{{ test.right_hand or 'N/A' }}</td>
+                                <td>{{ test.left_hand or 'N/A' }}</td>
+                            {% endfor %}
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
     <div id="editPatientModal" class="w3-modal">
