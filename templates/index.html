@@ -15,16 +15,14 @@
                     <tr>
                         <th>PATIENT ID</th>
                         <th>NAME</th>
-                        <th>BIRTHDATE</th>
+                        <th>BIRTHDATE</th>s\
                     </tr>
                     {% for patient in patients %}
-                        {% if patient['PT_MNAME'] %}
-                            <tr onclick="patientinfo('{{ patient.PT_ID }}')">
-                                <td>{{ patient['PT_ID'] }}</td>
-                                <td>{{ patient['PT_FULLNAME'].upper() }}</td>
-                                <td>{{ patient['DT_OF_BIRTH'] }}</td>
-                            </tr>
-                        {% endif %}
+                        <tr onclick="patientinfo('{{ patient.PT_ID }}')">
+                            <td>{{ patient['PT_ID'] }}</td>
+                            <td>{{ patient['PT_FULLNAME'].upper() }}</td>
+                            <td>{{ patient['DT_OF_BIRTH'] }}</td>
+                        </tr>
                     {% endfor %}
                 </table>
             </div>
@@ -139,15 +137,6 @@
                     </div>
                 {% endfor %}
             </div>
-            <!-- <script>
-                // Automatically hide flash messages after 3 seconds
-                setTimeout(() => {
-                    const flashMessages = document.querySelectorAll('.flash');
-                    flashMessages.forEach(flash => {
-                        flash.style.display = 'none';
-                    });
-                }, 3000);
-            </script> -->
         {% endif %}
     {% endwith %}
     </div>
@@ -203,5 +192,8 @@
             })
             .catch(error => console.error('Error fetching patients:', error));
     }
+    
+        document.addEventListener('DOMContentLoaded', (event) => { toggleScreentestFields(); });
+
     </script>
 {%endblock%}
