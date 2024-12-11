@@ -205,8 +205,53 @@ def pat_info(patient_id):
             dob = dob.date()  
         today = datetime.today()
         age = today.year - dob.year - ((today.month, today.day) < (dob.month, dob.day))
+        
+    sql_stest = 'SELECT * FROM SCREENING_TEST WHERE PT_ID = ?' 
+    stest = getallprocess(sql_stest, (patient_id,))
+    
+    descriptions = {
+        'ENS_DATE': 'EXPANDED NEWBORN SCREENING',
+        'ROR_DATE': 'RED ORANGE REFLEX',
+    }
+    
+    test_data = []
+    htest = []
+    ptest = []
+    
+    
+    if stest:
+        for row in stest:
+            # General test data
+            for key, desc in descriptions.items():
+                if row.get(key):
+                    test_data.append({
+                        'date': row.get(key),
+                        'description': desc,
+                        'remarks': row.get(f'{key.split("_")[0]}_REMARKS', 'N/A')
+                    })
 
-    return render_template("pat_info.html", patient=patient, age=age, dr_name=dr_name, spclty=spclty)
+            # Hearing test data
+            if row.get('NHS_DATE'):
+                htest.append({
+                    'date': row.get('NHS_DATE'),
+                    'description': 'NEWBORN HEARING SCREENING',
+                    'right_ear': "PASSED" if row.get('NHS_REAR', 0) == 1 else "REFER",
+                    'left_ear': "PASSED" if row.get('NHS_LEAR', 0) == 1 else "REFER"
+                })
+
+            # Pulse oximetry data
+            if row.get('POS_CCHD_DATE'):
+                ptest.append({
+                    'date': row.get('POS_CCHD_DATE'),
+                    'description': 'PULSE OXIMETRY SCREENING',
+                    'right_hand': "POSITIVE" if row.get('POS_CCHD_RHAND', 0) == 1 else "NEGATIVE",
+                    'left_hand': "POSITIVE" if row.get('POS_CCHD_LHAND', 0) == 1 else "NEGATIVE"
+                })
+
+    return render_template("pat_info.html", patient=patient, age=age, 
+                           dr_name=dr_name, spclty=spclty, 
+                           test_data=test_data, htest=htest,
+                           ptest=ptest)
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
