@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/static/css/styles.css">
+    <link rel="stylesheet" href="/static/css/w3.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.0/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap" rel="stylesheet">
+    <title>KEEPSAKE</title>
+</head>
+<body>
+    <div class="main-container">
+        <div class=" w3-container w3-padding w3-white hdr">
+            <div class="box" id="box">
+                <a href="/"><img class="ks-logo" src="/static/images/2.png" alt="LOGO"></a>
+                <div class="right-box">
+                    <div class="accnt w3-container">
+                        <img class="account-icon" src="/static/images/account-logo.png" onclick="acc()">
+                        <div id="account-container">
+                            <p><h3><span id="dr_name" style="text-transform: uppercase;">{{ dr_name }}</span></h3></p>
+                            <p><h5><span id="spclty" style="text-transform: uppercase;">{{ spclty }}</span></h5></p>
+                            <hr>
+                            <div class="logout">
+                                <a href="{{ url_for('logout')}}"><img class="logout-icon" src="/static/images/log-out.png"> LOGOUT</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="w3-container w3-padding">
+            {% block content%}
+            {% endblock %}
+        </div>
+    </div>
+</body>
+<script>
+    setTimeout(() => {
+                    const flashMessages = document.querySelectorAll('.flash');
+                    flashMessages.forEach(flash => {
+                        flash.style.display = 'none';
+                    });
+                }, 3000);
+    function acc(){
+        var accountContainer = document.getElementById("account-container");
+        if (accountContainer.style.display === "block") {
+                accountContainer.style.display = "none";
+            } else {
+                accountContainer.style.display = "block";
+            } 
+    }
+
+    function dr_name(){
+        
+    }
+    
+
+</script>
+</html>

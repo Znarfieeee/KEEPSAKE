@@ -1,0 +1,207 @@
+{%extends 'base.html'%}
+{%block content%}
+    <div class="box-container">
+        <div class="upper-box">
+            <div class="searchbar">
+                <div class="line"><img class="filter-icon" src="/static/images/line.png"></div>
+                <input type="text" placeholder="Search Patient" id="searchInput" oninput="searchPatients()">
+                <div class="search-icon"><i class="fa fa-search" aria-hidden="true"></i></div>
+            </div>
+            <div class="add-btn" onclick="addpatient()">+ ADD</div>
+        </div>
+        <div class="content-container">    
+            <div class="table-container">
+                <table>
+                    <tr>
+                        <th>PATIENT ID</th>
+                        <th>NAME</th>
+                        <th>BIRTHDATE</th>
+                    </tr>
+                    {% for patient in patients %}
+                        {% if patient['PT_MNAME'] %}
+                            <tr onclick="patientinfo('{{ patient.PT_ID }}')">
+                                <td>{{ patient['PT_ID'] }}</td>
+                                <td>{{ patient['PT_FULLNAME'].upper() }}</td>
+                                <td>{{ patient['DT_OF_BIRTH'] }}</td>
+                            </tr>
+                        {% endif %}
+                    {% endfor %}
+                </table>
+            </div>
+        </div>
+        <div id="addpatientmodal" class="w3-modal">
+            <form action="/addpatient" method="POST" class="w3-modal-content w3-card-4 w3-round-xlarge" style="width: 50%;">
+                <header class="w3-container">
+                    <h2>Add Patient</h2>
+                </header>
+                <div class="w3-row">
+                    <div class="w3-container w3-padding addpt">
+                        <p>
+                            <label><b>PATIENT'S INFORMATION</b></label>
+                            <div class="patientinfoinput">
+                                <div class="firstrow">
+                                    <input class="w3-input" type="text" id="pt_lname" name="pt_lname" placeholder="Last name" required>
+                                    <input class="w3-input" type="text" id="pt_fname" name="pt_fname" placeholder="First name" required>
+                                </div>
+                                <div class="secondrow">
+                                    <input class="w3-input" type="text" id="pt_mname" name="pt_mname" placeholder="Middle name">
+                                    <input class="w3-input" type="date" id="dt_of_birth" name="dt_of_birth" placeholder="Date of Birth" required>
+                                </div>
+                            </div>
+                        </p>
+                        <p>
+                            <label><b>CONTACT INFORMATION</b></label>
+                            <div class="containtinfoinput">
+                                <div class="firstrow">
+                                    <input class="w3-input" type="text" id="mt_name" name="mt_name" placeholder="Mother's name" required>
+                                    <input class="w3-input" type="text" id="ft_name" name="ft_name" placeholder="Father's name" required>
+                                </div>
+                                <div class="secondrow">
+                                    <input class="w3-input" type="text" id="con_num" name="con_num" placeholder="Contact number" required>
+                                    <input class="w3-input" type="email" id="email_add" name="email_add" placeholder="Email address">
+                                </div>
+                            </div>
+                        </p>
+                        <p>
+                            <label><b>SCREENING TEST</b></label>
+                            <label class="switch">
+                                <input type="checkbox" id="toggleScreentest" onchange="toggleScreentestFields()">
+                                <span class="slider"></span>
+                            </label>
+                            <div id="screeningTestFields" class="stinfoinput">
+                                <div class="firstrow">
+                                    <label>EXPANDED NEWBORN SCREENING</label>
+                                    <div class="firstrowinput">
+                                        <input class="w3-input" type="date" id="ens_date" name="ens_date" placeholder="Date">
+                                        <select class="w3-select" name="ens_remarks" id="ens_remarks">
+                                            <option value="" disabled selected>Select Remarks</option>
+                                            <option value="initial">Initial</option>
+                                            <option value="repeat">Repeat</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="secondrow">
+                                    <label>NEWBORN HEARING SCREENING</label>
+                                    <div class="secondrowinput">
+                                        <input class="w3-input" type="date" id="nhs_date" name="nhs_date" placeholder="Date">
+                                        <select class="w3-select" name="nhs_rear" id="nhs_rear">
+                                            <option value="" disabled selected>Right Ear</option>
+                                            <option value="passed">Passed</option>
+                                            <option value="refer">Refer</option>
+                                        </select>
+                                        <select class="w3-select" name="nhs_lear" id="nhs_lear">
+                                            <option value="" disabled selected>Left Ear</option>
+                                            <option value="passed">Passed</option>
+                                            <option value="refer">Refer</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="thirdrow">
+                                    <label>RED ORANGE REFLEX</label>
+                                    <div class="thirdrowinput">
+                                        <input class="w3-input" type="date" id="ror_date" name="ror_date" placeholder="Date">
+                                        <input class="w3-input" type="text" id="ror_remarks" name="ror_remarks" placeholder="Remarks">
+                                    </div>
+                                </div>
+                                <div class="fourthrow">
+                                    <label>PULSE OXIMETRY SCREENING</label>
+                                    <div class="fourthrowinput">
+                                        <input class="w3-input" type="date" id="pos_cchd_date" name="pos_cchd_date" placeholder="Date">
+                                        <select class="w3-select" name="pos_cchd_rhand" id="pos_cchd_rhand">
+                                            <option value="" disabled selected>Right Hand</option>
+                                            <option value="positive">Positive</option>
+                                            <option value="negative">Negative</option>
+                                        </select>
+                                        <select class="w3-select" name="pos_cchd_lhand" id="pos_cchd_lhand">
+                                            <option value="" disabled selected>Left Hand</option>
+                                            <option value="positive">Positive</option>
+                                            <option value="negative">Negative</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                        </p>
+                        <p class="w3-center ad">
+                            <button type="button" onclick="closeModal()" class="modalcancel">Cancel</button>
+                            <button type="submit" class="modaladd">Add</button>
+                        </p>
+                    </div>
+                </div>
+            </form>
+        </div>
+        {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            <div class="flash-messages">
+                {% for category, message in messages %}
+                    <div class="flash {{ category }}">
+                        <span>{{ message }}</span>
+                        <!-- <button onclick="this.parentElement.style.display='none';">OK</button> -->
+                    </div>
+                {% endfor %}
+            </div>
+            <!-- <script>
+                // Automatically hide flash messages after 3 seconds
+                setTimeout(() => {
+                    const flashMessages = document.querySelectorAll('.flash');
+                    flashMessages.forEach(flash => {
+                        flash.style.display = 'none';
+                    });
+                }, 3000);
+            </script> -->
+        {% endif %}
+    {% endwith %}
+    </div>
+    <script>
+        function toggleScreentestFields() {
+            const isEnabled = document.getElementById('toggleScreentest').checked;
+            const screeningFields = document.querySelectorAll('#screeningTestFields input, #screeningTestFields select');
+
+            screeningFields.forEach(field => {
+                field.disabled = !isEnabled;
+            });
+        }
+        function patientinfo(PT_ID){
+            window.location.href = `/patient/${PT_ID}`;
+        }
+        function addpatient(){
+            document.querySelector("#addpatientmodal form").reset();
+
+            document.getElementById('addpatientmodal').style.display='block'
+        }
+        function closeModal() {
+            document.getElementById('addpatientmodal').style.display='none'
+            
+        }
+        function searchPatients() {
+        const query = document.getElementById('searchInput').value;
+
+        // Make an AJAX request to the server
+        fetch(`/searchpatient?query=${encodeURIComponent(query)}`)
+            .then(response => response.json())
+            .then(data => {
+                const table = document.querySelector('.table-container table');
+                const patients = data.patients;
+
+                table.innerHTML = `
+                    <tr>
+                        <th>PATIENT ID</th>
+                        <th>NAME</th>
+                        <th>BIRTHDATE</th>
+                    </tr>
+                `;
+
+                patients.forEach(patient => {
+                    const row = `
+                        <tr onclick="patientinfo('${patient.PT_ID}')">
+                            <td>${patient.PT_ID}</td>
+                            <td>${patient.PT_FULLNAME}</td>
+                            <td>${patient.DT_OF_BIRTH}</td>
+                        </tr>
+                    `;
+                    table.insertAdjacentHTML('beforeend', row);
+                });
+            })
+            .catch(error => console.error('Error fetching patients:', error));
+    }
+    </script>
+{%endblock%}

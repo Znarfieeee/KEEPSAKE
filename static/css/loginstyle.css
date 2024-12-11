@@ -1,0 +1,85 @@
+*{
+    margin: 0px;
+    padding: 0px;
+    font-family: 'Inter', sans-serif;
+    font-weight: regular;
+}
+
+.main-container {
+    width: 100%;
+    height: 100vh;
+    background: linear-gradient(27deg, #d6f5d6 50%, #f5f5f5 50%);
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.login-container{
+    height: 250px;
+    width: 350px;
+    padding: 30px;
+    
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    background-color: white;
+    border-radius: 5px;
+    display: grid;
+    grid-column: auto;
+}
+
+.empID {
+    display: flex;
+    flex-direction: column;
+    margin-top: 10px;
+}
+
+.empID label {
+    margin-bottom: 5px;
+}
+
+.empID input {
+    height: 40px;
+    border: 1px solid #b7b7b7;
+    border-radius: 10px;
+    padding-left: 10px;
+}
+
+.pass {
+    display: flex;
+    flex-direction: column;
+    margin-top: 20px;
+}
+
+.pass label {
+    margin-bottom: 5px;
+}
+
+.pass input {
+    height: 40px;
+    border: 1px solid #b7b7b7;
+    border-radius: 10px;
+    padding-left: 10px;
+    margin-bottom: 20px;
+}
+
+.login-btn {
+    width: 100%;
+    height: 40px;
+    margin-top: 10px;
+}
+
+button{
+    height: 100%;
+    width: 100%;
+
+    background-color: #9CD49F; 
+    cursor: pointer;
+    border: none;
+    border-radius: 10px;
+}
+
+button:hover {
+    background-color: #448147;
+    color: #f4f4f4;
+    cursor: pointer;
+}

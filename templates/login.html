@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../static/css/loginstyle.css">
+    <title>KEEPSAKE | Login</title>
+</head>
+<body>
+    <div class="main-container">
+        <div class="login-container">
+            <form action="{{url_for('login')}}" method="post">
+                <tr>
+                    <div class="empID">
+                        <label>Employee ID</label>
+                        <input type="text" name="EMP_ID"  id="EMP_ID" placeholder="Enter Employee ID">
+                    </div>
+                </tr>
+                <tr>
+                    <div class="pass">
+                        <label>Password</label>
+                        <input type="password" name="PASSWORD" id="PASSWORD"  placeholder="Enter Passowrd">
+                    </div>
+                </tr>
+                <tr>
+                    <div class="login-btn">
+                        <button type="submit">Sign In</button>
+                    </div>
+                </tr>
+            </form>
+        </div>
+    </div>
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            <div id="flashMessageModal" class="w3-modal " style="display: block; ">
+                <div class="w3-modal-content w3-card-4 w3-round-xlarge" style=" width: 30%; margin: auto; top: 150px;">
+                    <header class="w3-container w3-grey" style="height: 50px;">
+                        <h5>Notification</h2>
+                    </header>
+                    <div class="w3-container w3-center">
+                        {% for category, message in messages %}
+                            <p class="w3-text-{{ category }} w3-panel">{{ message }}</p>
+                        {% endfor %}
+                        <button class="w3-button w3-blue w3-center" onclick="closeModal()" >OK</button>
+                    </div>
+                </div>
+            </div>
+        {% endif %}
+    {% endwith %}
+    <script>
+        function closeModal() {
+            document.getElementById('flashMessageModal').style.display = 'none';
+        }
+    </script>
+
+</body>
+</html>
