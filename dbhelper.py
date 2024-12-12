@@ -4,7 +4,11 @@ try:
     # Establish database connection
     db = odbc.connect(
         'DRIVER=ODBC Driver 11 for SQL Server;' 
+<<<<<<< HEAD
         'SERVER=DESKTOP-RPF16C9;'                  
+=======
+        'SERVER=SHEKAINAH;'                  
+>>>>>>> f72d0b7faf321527985cff12288bc92b5a02d087
         'DATABASE=KEEPSAKE;'           
         'Trusted_Connection=yes;'          
         'Encrypt=yes;'                       
