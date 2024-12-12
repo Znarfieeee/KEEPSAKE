@@ -1,0 +1,75 @@
+{% extends 'base.html' %} 
+{% block content %}
+<div class="information-container">
+    <div class="patient-header">
+        <div class="patient-info">
+            <a href="{{ url_for('pat_info', patient_id=patient['PT_ID']) }}" class="btn btn-link">
+                <img style="height: 25px; width:auto;" src="/static/images/back.png">
+            </a>
+            <h1 style="margin-left: 10px;">{{ patient['PT_FNAME'] }} {{ patient['PT_LNAME'] }}</h1>
+        </div>
+        <div class="action-btn">
+            <button class="new-prescription-btn" onclick="showNewPrescriptionModal()">+ New Prescription</button>
+        </div>
+    </div>
+
+    <div class="tabs">
+        <button id="information">INFORMATION</button>
+        <button id="immunization">IMMUNIZATION</button>
+        <button class="active" id="prescription">PRESCRIPTION</button>
+    </div>
+
+    <div class="tab-content">
+        <div class="prescription-info">
+            <div class="pat-detail-title">PRESCRIPTIONS</div>
+            <table class="prescription-table">
+                <thead>
+                    <!-- <tr>
+                        <th>DATE</th>
+                        <th>DIAGNOSIS</th>
+                    </tr> -->
+                </thead>
+                <tbody>
+                    {% for record in prescriptions %}
+                    <tr>
+                        <td>{{ record.PRESCRIPTION_DATE }}</td>
+                        <td>{{ record.DIAGNOSIS }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<div id="newPrescriptionModal" class="modal" style="display: none;">
+    <div class="modal-content">
+        <span class="close" onclick="closeNewPrescriptionModal()">&times;</span>
+        <h2>Add New Prescription</h2>
+        <form method="POST" action="{{ url_for('add_prescription', patient_id=patient['PT_ID']) }}">
+            <div class="form-group">
+                <label for="prescription_date">Prescription Date</label>
+                <input type="date" id="prescription_date" name="prescription_date" required>
+            </div>
+            <div class="form-group">
+                <label for="diagnosis">Diagnosis</label>
+                <textarea id="diagnosis" name="diagnosis" required></textarea>
+            </div>
+            <div class="form-actions">
+                <button type="submit" class="btn btn-primary">Save</button>
+                <button type="button" class="btn btn-secondary" onclick="closeNewPrescriptionModal()">Cancel</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    function showNewPrescriptionModal() {
+        document.getElementById('newPrescriptionModal').style.display = 'block';
+    }
+
+    function closeNewPrescriptionModal() {
+        document.getElementById('newPrescriptionModal').style.display = 'none';
+    }
+</script>
+{% endblock %}
