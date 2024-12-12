@@ -204,7 +204,13 @@ def pat_info(patient_id):
         if isinstance(dob, datetime):
             dob = dob.date()  
         today = datetime.today()
-        age = today.year - dob.year - ((today.month, today.day) < (dob.month, dob.day))
+        age_years = today.year - dob.year - ((today.month, today.day) < (dob.month, dob.day))
+        if age_years == 0:
+            # If age is 0 years, calculate the months
+            age_months = (today.year - dob.year) * 12 + today.month - dob.month - (today.day < dob.day)
+            age = f"{age_months} months"
+        else:
+            age = age_years
         
     sql_stest = 'SELECT * FROM SCREENING_TEST WHERE PT_ID = ?' 
     stest = getallprocess(sql_stest, (patient_id,))
@@ -358,6 +364,48 @@ def index():
 
     dr_name = session.get('dr_name', '')
     spclty = session.get('spclty', '')
+    
+@app.route("/addprescription/<int:patient_id>", methods=['POST'])
+def add_prescription(patient_id):
+    if not session.get('logged_in'):
+        return redirect(url_for('login'))
+
+    try:
+        prescription_date = request.form.get('prescription_date').strip()
+        diagnosis = request.form.get('diagnosis').strip()
+
+        success = addnewprescription(patient_id, prescription_date, diagnosis)
+        if success:
+            flash("Prescription added successfully.", "success")
+        else:
+            flash("Failed to add prescription.", "error")
+    except Exception as e:
+        flash(f"An error occurred: {e}", "error")
+
+    return redirect(url_for('pat_info', patient_id=patient_id))
+
+@app.route("/prescriptions/<int:patient_id>")
+def presc_info(patient_id):
+    if not session.get('logged_in'):
+        return redirect(url_for('login'))
+
+    patient = getpatientbyid(patient_id)
+    if not patient:
+        flash("Patient not found!", "error")
+        return redirect(url_for('index'))
+
+    prescriptions = getprescriptionsbypatientid(patient_id)
+
+    dr_name = session.get('dr_name', '')
+    spclty = session.get('spclty', '')
+
+    return render_template(
+        "presc_inf.html", 
+        patient=patient, 
+        prescriptions=prescriptions,
+        dr_name=dr_name,
+        spclty=spclty
+    )
     
 
     return render_template("index.html", pagetitle = "Keepsake", patients=patients, dr_name=dr_name, spclty=spclty)

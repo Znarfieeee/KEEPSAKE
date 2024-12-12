@@ -10,22 +10,25 @@
             <h1 style="margin-left: 10px;">{{ patient['PT_FNAME'] }} {{ patient['PT_LNAME'] }}</h1>
         </div>
         <div class="action-btn">
-            <button class="edit-btn" onclick="showNewPrescriptionModal()">+ New Prescription</button>
+            <button class="edit-btn" onclick="editPatient()">EDIT</button>
+            <button class="deactivate-btn" onclick="deactivatePatient('{{ patient.PT_ID }}')">DEACTIVATE</button>
         </div>
         
     </div>
 
     <!-- Tab navigation -->
     <div class="tabs">
-        <button id="information" onclick="redirectToInformation({{ patient['PT_ID']|tojson }})">INFORMATION</button>
-        <button id="immunization" onclick="showImmunizationTab()">IMMUNIZATION</button>
+        <button id="information" onclick="toPatInfo('{{ patient.PT_ID }}')">INFORMATION</button>
+        <button id="immunization">IMMUNIZATION</button>
         <button class="active" id="prescription">PRESCRIPTION</button>
     </div>
 
     <!-- Tab content -->
     <div class="tab-content">
         <div class="prescription-info">
-            <div class="pat-detail-title">PRESCRIPTIONS</div>
+            <div class="pat-detail-title">           
+                 <button class="np-btn" onclick="showNewPrescriptionModal()">+ New Prescription</button>
+            </div>
             <table class="prescription-table">
                 <thead> 
                     <tr>
@@ -45,7 +48,6 @@
         </div>
     </div>
 
-<!-- Modal -->
 <div id="prescriptionModal" class="modal" style="display: none;">
     <div class="modal-overlay" onclick="closeModal()"></div>
     <div class="modal-content">
@@ -54,7 +56,7 @@
             <label>Enable All Anthropometric Inputs:</label>
             <label class="switch">
                 <input type="checkbox" id="toggleInputs" onchange="toggleInputs()">
-                <span class="slider round"></span>
+                <span class="slider"></span>
             </label>
         </div>
 
@@ -99,34 +101,32 @@
     </div>
 </div>
 
-
 <script>
-    
     function toggleInputs() {
-    const toggle = document.getElementById('toggleInputs').checked;
+        const toggle = document.getElementById('toggleInputs').checked;
 
-    // Get input fields
-    const headInput = document.getElementById('headInput');
-    const chestInput = document.getElementById('chestInput');
-    const girthInput = document.getElementById('girthInput');
+        // Get input fields
+        const headInput = document.getElementById('headInput');
+        const chestInput = document.getElementById('chestInput');
+        const girthInput = document.getElementById('girthInput');
 
-    // Enable or disable inputs based on the toggle
-    headInput.disabled = !toggle;
-    chestInput.disabled = !toggle;
-    girthInput.disabled = !toggle;
-}
+        // Enable or disable inputs based on the toggle
+        headInput.disabled = !toggle;
+        chestInput.disabled = !toggle;
+        girthInput.disabled = !toggle;
+    }
 
-function showNewPrescriptionModal() {
-    document.getElementById('prescriptionModal').style.display = 'flex';
-}
+    function toPatInfo(patientId) {
+                window.location.href = `/patient/${patientId}`;
+            }
 
-function closeModal() {
-    document.getElementById('prescriptionModal').style.display = 'none';
-}
+    function showNewPrescriptionModal() {
+        document.getElementById('newPrescriptionModal').style.display = 'block';
+    }
 
+    function closeNewPrescriptionModal() {
+        document.getElementById('newPrescriptionModal').style.display = 'none';
+    }
 
-function redirectToInformation(patientId) {
-    window.location.href = `/patient/${patientId}`;
-}
 </script>
 {% endblock %}
