@@ -5,7 +5,7 @@ from pyodbc import *
 try:
     db = odbc.connect(
         'DRIVER=ODBC Driver 11 for SQL Server;' 
-        'SERVER=SHEKAINAH;'                  
+        'SERVER=PRNSDAGREAT;'                  
         'DATABASE=KEEPSAKE;'           
         'Trusted_Connection=yes;'          
         'Encrypt=yes;'                       
@@ -47,6 +47,28 @@ try:
         sql = "SELECT * FROM PATIENT_INFORMATION WHERE PT_ID = ?"
         result = getallprocess(sql, (patient_id,))
         return result[0] if result else None
+    
+    def getprescriptionsbypatientid(patient_id: str) -> list:
+        """Fetch all prescriptions for a given patient ID."""
+        sql = """
+            SELECT RX_ID, [DATE] AS PRESCRIPTION_DATE, FINDINGS AS DIAGNOSIS
+            FROM PRESCRIPTIONS
+            WHERE PT_ID = ?
+        """
+        return getallprocess(sql, (patient_id,))
+
+    def addnewprescription(patient_id: str, prescription_date: str, diagnosis: str) -> bool:
+        """Add a new prescription to the database."""
+        try:
+            sql = """
+                INSERT INTO PRESCRIPTIONS (PT_ID, [DATE], FINDINGS)
+                VALUES (?, ?, ?)
+            """
+            success = postprocess(sql, (patient_id, prescription_date, diagnosis))
+            return success
+        except Exception as e:
+            print(f"Database Error in addnewprescription: {e}")
+            return False
     
     
 except odbc.Error as ex:

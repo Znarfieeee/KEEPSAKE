@@ -18,7 +18,7 @@
         <div class="tabs">
             <button class="active" id="information">INFORMATION</button>
             <button id="immunization">IMMUNIZATION</button>
-            <button id="prescription">PRESCRIPTION</button>
+            <button id="prescription" onclick="redirectToPrescription('{{ patient.PT_ID }}')">PRESCRIPTION</button>
         </div>
 
         <div class="tab-content">
@@ -172,13 +172,15 @@
                 {% for category, message in messages %}
                     <div class="flash {{ category }}">
                         <span>{{ message }}</span>
-                        <!-- <button onclick="this.parentElement.style.display='none';">OK</button> -->
                     </div>
                 {% endfor %}
             </div>
         {% endif %}
     {% endwith %}
     <script>
+        function redirectToPrescription(patientId) {
+                window.location.href = `/prescriptions/${patientId}`;
+            }
         
         function editPatient() {
 
@@ -211,7 +213,5 @@
             }
         }
 
-        function active() {
-        }
     </script>
 {% endblock %}
