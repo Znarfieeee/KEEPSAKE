@@ -4,7 +4,7 @@
 2. cmd
 3. git checkout -b (name)
 4. git pull origin main
-5. code.
+5. code .
 
 #Kung wala pay files
 1. adto sa directory
