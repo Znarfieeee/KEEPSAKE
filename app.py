@@ -253,6 +253,49 @@ def pat_info(patient_id):
                            test_data=test_data, htest=htest,
                            ptest=ptest)
 
+@app.route("/addprescription/<int:patient_id>", methods=['POST'])
+def add_prescription(patient_id):
+    if not session.get('logged_in'):
+        return redirect(url_for('login'))
+    
+    try:
+        prescription_date = request.form.get('prescription_date').strip()
+        diagnosis = request.form.get('diagnosis').strip()
+        
+        success = addnewprescription(patient_id, prescription_date, diagnosis)
+        if success:
+            flash("Prescription added successfully.", "success")
+        else:
+            flash("Failed to add prescription.", "error")
+    except Exception as e:
+        flash(f"An error occurred: {e}", "error")
+
+    return redirect(url_for('pat_info', patient_id=patient_id))
+
+@app.route("/prescriptions/<int:patient_id>")
+def presc_info(patient_id):
+    if not session.get('logged_in'):
+        return redirect(url_for('login'))
+
+    patient = getpatientbyid(patient_id)
+    if not patient:
+        flash("Patient not found!", "error")
+        return redirect(url_for('index'))
+
+    prescriptions = getprescriptionsbypatientid(patient_id)
+
+    dr_name = session.get('dr_name', '')
+    spclty = session.get('spclty', '')
+
+    return render_template(
+        "presc_inf.html", 
+        patient=patient, 
+        prescriptions=prescriptions,
+        dr_name=dr_name,
+        spclty=spclty
+    )
+    
+
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     # if session.get('logged_in'):

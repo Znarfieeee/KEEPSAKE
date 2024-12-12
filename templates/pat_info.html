@@ -14,12 +14,23 @@
             </div>
         </div>
 
-        <!-- Tabs -->
         <div class="tabs">
-            <button class="active" id="information">INFORMATION</button>
+            <button id="information" onclick="showInfoTab()">INFORMATION</button>
             <button id="immunization">IMMUNIZATION</button>
-            <button id="prescription">PRESCRIPTION</button>
+            <button id="prescription" onclick="redirectToPrescription('{{ patient.PT_ID }}')">PRESCRIPTION</button>
         </div>
+        
+        <script>
+            function showInfoTab() {
+                // Logic to show Information tab, if needed
+            }
+        
+            function redirectToPrescription(patientId) {
+                // Redirect to prescription page
+                window.location.href = `/prescriptions/${patientId}`;
+            }
+        </script>
+        
 
         <div class="tab-content">
             <div class="pt-info">
