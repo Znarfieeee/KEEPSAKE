@@ -2,7 +2,7 @@
 
 1. adto sa directory (katong folder kung asa ang mga files)
 2. cmd
-3. git checkout -b (name)
+3. git checkout -b (name) //pagpili unsa imo ipangan sa branch 
 4. git pull origin main
 5. code .
 
