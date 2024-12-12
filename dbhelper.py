@@ -5,7 +5,7 @@ from pyodbc import *
 try:
     db = odbc.connect(
         'DRIVER=ODBC Driver 11 for SQL Server;' 
-        'SERVER=PRNSDAGREAT;'                  
+        'SERVER=SHEKAINAH;'                  
         'DATABASE=KEEPSAKE;'           
         'Trusted_Connection=yes;'          
         'Encrypt=yes;'                       
