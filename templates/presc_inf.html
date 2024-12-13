@@ -39,7 +39,7 @@
                     <tr>
                         <td>{{ record.PRESCRIPTION_DATE }}</td>
                         <td>
-                            <a href="#" onclick="showDiagnosisModal('{{ record.PRESCRIPTION_DATE }}', '{{ record.DIAGNOSIS }}', '{{ record.PRESCRIPTION_DETAILS_JSON|safe }}')">
+                            <a href="#" onclick="showDiagnosisModal('{{ record.PRESCRIPTION_DATE }}', '/prescription_details/{{ record.PRESCRIPTION_ID }}')">
                                 {{ record.DIAGNOSIS }}
                             </a>
                         </td>
@@ -48,52 +48,55 @@
                 </tbody>
             </table>
             
-            <!-- Diagnosis Modal -->
+           <!-- Diagnosis Modal -->
 <div id="diagnosisModal" class="w3-modal" style="display: none;">
     <div class="modal-overlay" onclick="closeDiagnosisModal()"></div>
-    <div class="modal-card">
+    <div class="w3-modal-content w3-padding modal-container">
+        <!-- Header -->
         <div class="modal-header">
             <button class="back-btn" onclick="closeDiagnosisModal()">←</button>
             <button class="print-btn" onclick="window.print()">PRINT</button>
         </div>
-        <div class="w3-modal-content w3-padding">
-            <!-- Anthropometric Measurement Section -->
-            <div class="section">
-                <h2>ANTHROPOMETRIC MEASUREMENT</h2>
+
+        <!-- Anthropometric Measurement Section -->
+        <div class="section">
+            <h2 class="section-title">ANTHROPOMETRIC MEASUREMENT</h2>
+            <div class="row">
                 <p><strong>LENGTH:</strong> <span id="modalLength">-</span></p>
                 <p><strong>HEAD CIRCUMFERENCE:</strong> <span id="modalHeadCircumference">-</span></p>
+            </div>
+            <div class="row">
                 <p><strong>WEIGHT:</strong> <span id="modalWeight">-</span></p>
                 <p><strong>CHEST CIRCUMFERENCE:</strong> <span id="modalChestCircumference">-</span></p>
             </div>
+        </div>
 
-            <!-- Prescription Section -->
-            <div class="section">
-                <h2>PRESCRIPTION</h2>
-                <div class="row">
-                    <p><strong>DATE:</strong> <span id="modalDate">-</span></p>
-                    <p><strong>AGE:</strong> <span id="modalAge">-</span></p>
-                </div>
-                <p><strong>FINDINGS:</strong> <span id="modalFindings">-</span></p>
-                <p><strong>CONSULT:</strong> <span id="modalConsult">-</span></p>
+        <!-- Prescription Section -->
+        <div class="section">
+            <h2 class="section-title">PRESCRIPTION</h2>
+            <div class="row">
+                <p><strong>DATE:</strong> <span id="modalDate">-</span></p>
+                <p><strong>AGE:</strong> <span id="modalAge">-</span></p>
             </div>
+            <p><strong>FINDINGS:</strong> <span id="modalFindings">-</span></p>
+            <p><strong>CONSULT:</strong> <span id="modalConsult">-</span></p>
+        </div>
 
-            <!-- Instruction Section -->
-            <div class="section">
-                <h2>INSTRUCTION</h2>
-                <div class="instruction-box">
-                    <p id="modalInstruction">-</p>
-                </div>
+        <!-- Instruction Section -->
+        <div class="section">
+            <h2 class="section-title">INSTRUCTION</h2>
+            <div class="instruction-box">
+                <p id="modalInstruction">-</p>
             </div>
+        </div>
 
-            <!-- Pediatrician Section -->
-            <div class="section">
-                <h2>PEDIATRICIAN</h2>
-                <p><strong>DR. CHIZ STRESSUEL</strong></p>
-            </div>
+        <!-- Pediatrician Section -->
+        <div class="section">
+            <h2 class="section-title">PEDIATRICIAN</h2>
+            <p><strong>DR. CHIZ STRESSUEL</strong></p>
         </div>
     </div>
 </div>
-
 <div id="prescriptionModal" class="w3-modal" style="display: none;">
     <div class="modal-overlay" onclick="closeModal()"></div>
     <div class="w3-modal-content" id="mod-cont">
@@ -224,6 +227,45 @@
     function closemodal() {
         document.getElementById('prescriptionModal').style.display = 'none';
     }
+
+    function showDiagnosisModal(date, detailsUrl) {
+    // Use AJAX to fetch prescription details from the server
+    fetch(detailsUrl)
+        .then(response => response.text()) // Fetch as plain text
+        .then(data => {
+            // Parse key-value pairs from the server response
+            const details = {};
+            data.split(';').forEach(pair => {
+                const [key, value] = pair.split(':');
+                if (key && value) {
+                    details[key.trim()] = value.trim();
+                }
+            });
+
+            // Update modal fields
+            document.getElementById('modalDate').textContent = date;
+            document.getElementById('modalLength').textContent = details.length || "-";
+            document.getElementById('modalWeight').textContent = details.weight || "-";
+            document.getElementById('modalHeadCircumference').textContent = details.head_circumference || "-";
+            document.getElementById('modalChestCircumference').textContent = details.chest_circumference || "-";
+            document.getElementById('modalAge').textContent = details.age || "-";
+            document.getElementById('modalFindings').textContent = details.findings || "-";
+            document.getElementById('modalConsult').textContent = details.consult || "-";
+            document.getElementById('modalInstruction').textContent = details.instruction || "-";
+
+            // Show the modal
+            document.getElementById('diagnosisModal').style.display = 'block';
+        })
+        .catch(error => {
+            console.error('Failed to fetch details:', error);
+            alert('Unable to fetch prescription details. Please try again.');
+        });
+    }
+
+    function closeDiagnosisModal() {
+    document.getElementById('diagnosisModal').style.display = 'none';
+    }   
+
 
 </script>
 {% endblock %}
