@@ -62,20 +62,6 @@ try:
             WHERE PT_ID = ?
         """
         return getallprocess(sql, (patient_id,))
-
-    def addnewprescription(patient_id: str, prescription_date: str, diagnosis: str) -> bool:
-        """Add a new prescription to the database."""
-        try:
-            sql = """
-                INSERT INTO PRESCRIPTIONS (PT_ID, [DATE], FINDINGS)
-                VALUES (?, ?, ?)
-            """
-            success = postprocess(sql, (patient_id, prescription_date, diagnosis))
-            return success
-        except Exception as e:
-            print(f"Database Error in addnewprescription: {e}")
-            return False
-    
     
 except odbc.Error as ex:
     print('Connection Failed:', ex)

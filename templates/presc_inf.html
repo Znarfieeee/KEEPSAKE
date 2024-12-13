@@ -10,7 +10,6 @@
             <h1 style="margin-left: 10px;">{{ patient['PT_FNAME'] }} {{ patient['PT_LNAME'] }}</h1>
         </div>
         <div class="action-btn">
-            <button class="edit-btn" onclick="editPatient()">EDIT</button>
             <button class="deactivate-btn" onclick="deactivatePatient('{{ patient.PT_ID }}')">DEACTIVATE</button>
         </div>
     </div>
@@ -95,73 +94,96 @@
     </div>
 </div>
 
-
-            <div id="prescriptionModal" class="modal" style="display: none;">
-                <div class="modal-overlay" onclick="closeModal()"></div>
-                <div class="modal-content">
-                    <!-- Toggle Button -->
-                    <div class="toggle-section">
-                        <label>Enable All Anthropometric Inputs:</label>
-                        <label class="switch">
-                            <input type="checkbox" id="toggleInputs" onchange="toggleInputs()">
-                            <span class="slider"></span>
-                        </label>
-                    </div>
-
-        <!-- Anthropometric Measurement Section -->
-        <div class="section">
-            <label class="section-title">ANTHROPOMETRIC MEASUREMENT</label>
-            <div class="input-grid">
-                <input type="text" class="input" name="length" placeholder="LENGTH" id="lengthInput">
-                <input type="text" class="input" name="weight" placeholder="WEIGHT" id="weightInput">
-                <input type="text" class="input" name="head_circumference" placeholder="HEAD CIRCUMFERENCE" id="headInput" disabled>
-                <input type="text" class="input" name="chest_circumference" placeholder="CHEST CIRCUMFERENCE" id="chestInput" disabled>
-                <input type="text" class="input" name="abdominal_girth" placeholder="ABDOMINAL GIRTH" id="girthInput" disabled>
+<div id="prescriptionModal" class="w3-modal" style="display: none;">
+    <div class="modal-overlay" onclick="closeModal()"></div>
+    <div class="w3-modal-content" id="mod-cont">
+        <form method="POST" action="{{ url_for('add_prescription', patient_id=patient['PT_ID']) }}">
+            <div class="toggle-section">
+                <label>Enable All Anthropometric Inputs? </label>
+                <label class="switch">
+                    <input type="checkbox" id="toggleInputs" onchange="toggleInputs()">
+                    <span class="slider two"></span>
+                </label>
             </div>
-        </div>
 
-        <!-- Prescription Section -->
-        <div class="section">
-            <label class="section-title">PRESCRIPTION</label>
-            <div class="input-grid">
-                <select class="input" name="checkup_type">
-                    <option disabled selected>CHECK-UP TYPE</option>
-                    <option value="initial">Initial</option>
-                    <option value="follow-up">Follow-up</option>
-                </select>
-                <input type="date" class="input" name="date">
-                <input type="number" class="input" name="age" placeholder="AGE">
-                <input type="text" class="input" name="findings" placeholder="FINDINGS">
-                <input type="text" class="input" name="consult" placeholder="CONSULT">
+            <div class="section">
+                <label class="section-title">ANTHROPOMETRIC MEASUREMENT</label>
+                <div class="input-grid">
+                    <input type="text" class="input" name="length" id="length" placeholder="Length 'cm'" id="lengthInput">
+                    <input type="text" class="input" name="weight" id="weight" placeholder="Weigth 'kg'" id="weightInput">
+                    <input type="text" class="input" name="head_circumference" id="head_circumference" placeholder="Head circumference 'cm'" >
+                    <input type="text" class="input" name="chest_circumference" id="chest_circumference" placeholder="Chest circumference 'cm'" >
+                    <input type="text" class="input" name="abdominal_girth" id="abdominal_girth" placeholder="Abdominal girth 'cm'" >
+                </div>
             </div>
-        </div>
 
-        <!-- Instruction Section -->
-        <div class="section">
-            <label class="section-title">INSTRUCTION</label>
-            <textarea class="input instruction-box" name="instruction" placeholder="Type instructions here..."></textarea>
-        </div>
+            <!-- Prescription Section -->
+            <div class="section">
+                <label class="section-title">PRESCRIPTION</label>
+                <div class="input-grid">
+                    <select class="input" name="checkup_type" required>
+                        <option disabled selected>CHECK-UP TYPE</option>
+                        <option value="1">Initial</option>
+                        <option value="2">Follow-up</option>
+                    </select>
+                    <input type="date" class="input" name="prescription_date" id="prescription_date" required>
+                    <input type="number" class="input" name="age" id="age" placeholder="Age" required>
+                    <input type="text" class="input" name="findings" id="findings" placeholder="FINDINGS" required>
+                    <input type="text" class="input" name="consult" id="consult" placeholder="CONSULT" required>
+                    <input type="date" class="input" name="returndate" id="returndate" placeholder="RETURN DATE">
+                </div>
+            </div>
 
-        <!-- Save Button -->
-        <div class="actions">
-            <button type="submit" class="save-btn">SAVE</button>
-        </div>
+            <!-- Instruction Section -->
+            <div class="section">
+                <label class="section-title">INSTRUCTION</label>
+                <textarea class="input instruction-box" name="instruction" id="instruction" placeholder="Type instructions here..." style="background: transparent;"></textarea>
+            </div>
+
+            <div class="w3-center ad">
+                <button type="button" onclick="closemodal()" class="modalcancel">Cancel</button>
+                <button type="submit" class="modaladd">Save</button>
+            </div>
+        </form>
     </div>
 </div>
-
+{% with messages = get_flashed_messages(with_categories=true) %}
+{% if messages %}
+    <div class="flash-messages">
+        {% for category, message in messages %}
+            <div class="flash {{ category }}">
+                <span>{{ message }}</span>
+            </div>
+        {% endfor %}
+    </div>
+{% endif %}
+{% endwith %}
 <script>
+    
     function toggleInputs() {
         const toggle = document.getElementById('toggleInputs').checked;
 
-        // Get input fields
-        const headInput = document.getElementById('headInput');
-        const chestInput = document.getElementById('chestInput');
-        const girthInput = document.getElementById('girthInput');
+        // Get all inputs that need toggling
+        const inputs = [
+            document.getElementById('head_circumference'),
+            document.getElementById('chest_circumference'),
+            document.getElementById('abdominal_girth'),
+        ];
 
-        // Enable or disable inputs based on the toggle
-        headInput.disabled = !toggle;
-        chestInput.disabled = !toggle;
-        girthInput.disabled = !toggle;
+        // Enable or disable inputs and update styles
+        inputs.forEach(field => {
+            if (field) {
+                field.disabled = !toggle; // Toggle the disabled state
+                if (toggle) {
+                    field.style.backgroundColor = '#fff'; // Active state styles
+                    field.style.color = '#000';
+                } else {
+                    field.style.backgroundColor = '#e9ecef'; // Disabled state styles
+                    field.style.color = '#6c757d';
+                    field.value = ''; // Optionally clear the value when disabled
+                }
+            }
+        });
     }
 
     function toPatInfo(patientId) {
@@ -176,28 +198,32 @@
         document.getElementById('prescriptionModal').style.display = 'none';
     }
 
-    function showDiagnosisModal(date, diagnosis, details) {
-    // Parse prescription details
-    const data = JSON.parse(details);
+    function deactivatePatient(pt_id) {
+            if (confirm('Are you sure you want to deactivate this patient?')) {
+                fetch('/deactivatepatient', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded'
+                    },
+                    body: `pt_id=${encodeURIComponent(pt_id)}`
+                })
+                .then(response => {
+                    if (response.redirected) {
+                        window.location.href = response.url;
+                    } else {
+                        alert('An error occurred while deactivating the patient.');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('An error occurred while deactivating the patient.');
+                });
+            }
+        }
 
-    // Populate modal fields
-    document.getElementById('modalDate').textContent = date;
-    document.getElementById('modalLength').textContent = data.length || "-";
-    document.getElementById('modalWeight').textContent = data.weight || "-";
-    document.getElementById('modalHeadCircumference').textContent = data.head_circumference || "-";
-    document.getElementById('modalChestCircumference').textContent = data.chest_circumference || "-";
-    document.getElementById('modalAge').textContent = data.age || "-";
-    document.getElementById('modalFindings').textContent = data.findings || "-";
-    document.getElementById('modalConsult').textContent = data.consult || "-";
-    document.getElementById('modalInstruction').textContent = data.instruction || "-";
-
-    // Display modal
-    document.getElementById('diagnosisModal').style.display = 'block';
+    function closemodal() {
+        document.getElementById('prescriptionModal').style.display = 'none';
     }
 
-    function closeDiagnosisModal() {
-        // Hide modal
-        document.getElementById('diagnosisModal').style.display = 'none';
-    }
 </script>
 {% endblock %}
