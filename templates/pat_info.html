@@ -160,7 +160,7 @@
                     <input class="w3-input" type="email" id="edit_email_add" name="email_add" value="{{ patient['EMAIL_ADD'] if patient['EMAIL_ADD'] else '' }}">
                 </p>
                 <div class="w3-center ad">
-                    <button type="button" onclick="closeEditModal()" class="modalcancel">Cancel</button>
+                    <button type="button" onclick="closemodal()" class="modalcancel">Cancel</button>
                     <button type="submit" class="modaladd">Save</button>
                 </div>
             </div>
@@ -186,7 +186,7 @@
 
             document.getElementById('editPatientModal').style.display = 'block';
         }
-        function closeEditModal() {
+        function closemodal() {
             document.getElementById('editPatientModal').style.display = 'none';
         }
 

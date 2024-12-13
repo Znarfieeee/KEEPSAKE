@@ -261,9 +261,6 @@ def pat_info(patient_id):
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
-    # if session.get('logged_in'):
-    #     return redirect(url_for('index'))
-    
     if request.method == 'POST':
         empid = request.form.get('EMP_ID')
         password = request.form.get('PASSWORD')
@@ -287,6 +284,7 @@ def login():
             
             session['dr_name'] = user[0].get('DR_NAME', '').upper()
             session['spclty'] = user[0].get('SPLTY', '').upper()
+            session['dr_id'] = user[0].get('DR_ID')
             return redirect(url_for('index'))
         else:
             flash("Invalid username or password.", "error")
@@ -322,24 +320,60 @@ def index():
     dr_name = session.get('dr_name', '')
     spclty = session.get('spclty', '')
     
+    return render_template("index.html", patients=patients, dr_name=dr_name, spclty=spclty)
+    
 @app.route("/addprescription/<int:patient_id>", methods=['POST'])
 def add_prescription(patient_id):
     if not session.get('logged_in'):
         return redirect(url_for('login'))
 
     try:
-        prescription_date = request.form.get('prescription_date').strip()
-        diagnosis = request.form.get('diagnosis').strip()
+        # Get form data
+        dr_id = session.get('dr_id')
+        
+        date = get_fieldvalue(request.form, 'prescription_date')
+        cutype = get_fieldvalue(request.form, 'checkup_type')
+        age = get_fieldvalue(request.form, 'age')
+        findings = get_fieldvalue(request.form, 'findings')
+        consult = get_fieldvalue(request.form, 'consult')
+        instruction = get_fieldvalue(request.form, 'instruction')
+        returndate = get_fieldvalue(request.form, 'returndate')      
+        length = get_fieldvalue(request.form, 'length')
+        weight = get_fieldvalue(request.form, 'weight')
+        headcc = get_fieldvalue(request.form, 'head_circumference')
+        chestcc = get_fieldvalue(request.form, 'chest_circumference')
+        abdogt = get_fieldvalue(request.form, 'abdominal_girth')
+        
+        sql_presc = """
+            EXEC SP_PRESCRIPTIONS @CU_TYPE = ?, @DATE = ?, @AGE = ?, 
+            @FINDINGS = ?, @CONSULT = ?, @DR_INS = ?, @RETURN_DT = ?, 
+            @PT_ID = ?, @DR_ID = ?
+        """
+        success2 = addprocess(sql_presc, (cutype, date, age, findings, consult, instruction, returndate, patient_id, dr_id))
+        if not success2 or len(success2) == 0:
+            flash("Failed to add prescription. Database operation did not return an ID.", "error")
+            return redirect(url_for('presc_info', patient_id=patient_id))
 
-        success = addnewprescription(patient_id, prescription_date, diagnosis)
-        if success:
+        rx_id = success2[0] if success2 else None
+        if not rx_id:
+            raise ValueError("Failed to retrieve PT_ID.")
+        
+        if any([length, weight, headcc, chestcc, abdogt]):
+            sql_am = """
+                EXEC SP_ATPMC_MSRMT @WEIGHT = ?, @LENGTH = ?, @HEAD_CC = ?, 
+                @CHEST_CC = ?, @ABDML_GT = ?, @PT_ID = ?, @RX_ID = ?
+            """
+            result = postprocess(sql_am, (length, weight, headcc, chestcc, abdogt, patient_id, rx_id))
+            if not result:
+                flash("Failed to save anthropometric measurements.", "error")
+        if success2:
             flash("Prescription added successfully.", "success")
         else:
             flash("Failed to add prescription.", "error")
     except Exception as e:
         flash(f"An error occurred: {e}", "error")
 
-    return redirect(url_for('pat_info', patient_id=patient_id))
+    return redirect(url_for('presc_info', patient_id=patient_id))
 
 @app.route("/prescriptions/<int:patient_id>")
 def presc_info(patient_id):
