@@ -13,7 +13,6 @@
             <button class="edit-btn" onclick="editPatient()">EDIT</button>
             <button class="deactivate-btn" onclick="deactivatePatient('{{ patient.PT_ID }}')">DEACTIVATE</button>
         </div>
-        
     </div>
 
     <!-- Tab navigation -->
@@ -40,25 +39,74 @@
                     {% for record in prescriptions %}
                     <tr>
                         <td>{{ record.PRESCRIPTION_DATE }}</td>
-                        <td>{{ record.DIAGNOSIS }}</td>
+                        <td>
+                            <a href="#" onclick="showDiagnosisModal('{{ record.PRESCRIPTION_DATE }}', '{{ record.DIAGNOSIS }}', '{{ record.PRESCRIPTION_DETAILS_JSON|safe }}')">
+                                {{ record.DIAGNOSIS }}
+                            </a>
+                        </td>
                     </tr>
                     {% endfor %}
                 </tbody>
             </table>
+            
+            <!-- Diagnosis Modal -->
+<div id="diagnosisModal" class="w3-modal" style="display: none;">
+    <div class="modal-overlay" onclick="closeDiagnosisModal()"></div>
+    <div class="modal-card">
+        <div class="modal-header">
+            <button class="back-btn" onclick="closeDiagnosisModal()">←</button>
+            <button class="print-btn" onclick="window.print()">PRINT</button>
+        </div>
+        <div class="w3-modal-content w3-padding">
+            <!-- Anthropometric Measurement Section -->
+            <div class="section">
+                <h2>ANTHROPOMETRIC MEASUREMENT</h2>
+                <p><strong>LENGTH:</strong> <span id="modalLength">-</span></p>
+                <p><strong>HEAD CIRCUMFERENCE:</strong> <span id="modalHeadCircumference">-</span></p>
+                <p><strong>WEIGHT:</strong> <span id="modalWeight">-</span></p>
+                <p><strong>CHEST CIRCUMFERENCE:</strong> <span id="modalChestCircumference">-</span></p>
+            </div>
+
+            <!-- Prescription Section -->
+            <div class="section">
+                <h2>PRESCRIPTION</h2>
+                <div class="row">
+                    <p><strong>DATE:</strong> <span id="modalDate">-</span></p>
+                    <p><strong>AGE:</strong> <span id="modalAge">-</span></p>
+                </div>
+                <p><strong>FINDINGS:</strong> <span id="modalFindings">-</span></p>
+                <p><strong>CONSULT:</strong> <span id="modalConsult">-</span></p>
+            </div>
+
+            <!-- Instruction Section -->
+            <div class="section">
+                <h2>INSTRUCTION</h2>
+                <div class="instruction-box">
+                    <p id="modalInstruction">-</p>
+                </div>
+            </div>
+
+            <!-- Pediatrician Section -->
+            <div class="section">
+                <h2>PEDIATRICIAN</h2>
+                <p><strong>DR. CHIZ STRESSUEL</strong></p>
+            </div>
         </div>
     </div>
+</div>
 
-<div id="prescriptionModal" class="modal" style="display: none;">
-    <div class="modal-overlay" onclick="closeModal()"></div>
-    <div class="modal-content">
-        <!-- Toggle Button -->
-        <div class="toggle-section">
-            <label>Enable All Anthropometric Inputs:</label>
-            <label class="switch">
-                <input type="checkbox" id="toggleInputs" onchange="toggleInputs()">
-                <span class="slider"></span>
-            </label>
-        </div>
+
+            <div id="prescriptionModal" class="modal" style="display: none;">
+                <div class="modal-overlay" onclick="closeModal()"></div>
+                <div class="modal-content">
+                    <!-- Toggle Button -->
+                    <div class="toggle-section">
+                        <label>Enable All Anthropometric Inputs:</label>
+                        <label class="switch">
+                            <input type="checkbox" id="toggleInputs" onchange="toggleInputs()">
+                            <span class="slider"></span>
+                        </label>
+                    </div>
 
         <!-- Anthropometric Measurement Section -->
         <div class="section">
@@ -117,16 +165,39 @@
     }
 
     function toPatInfo(patientId) {
-                window.location.href = `/patient/${patientId}`;
-            }
+        window.location.href = `/patient/${patientId}`;
+    }
 
     function showNewPrescriptionModal() {
-        document.getElementById('newPrescriptionModal').style.display = 'block';
+        document.getElementById('prescriptionModal').style.display = 'block';
     }
 
     function closeNewPrescriptionModal() {
-        document.getElementById('newPrescriptionModal').style.display = 'none';
+        document.getElementById('prescriptionModal').style.display = 'none';
     }
 
+    function showDiagnosisModal(date, diagnosis, details) {
+    // Parse prescription details
+    const data = JSON.parse(details);
+
+    // Populate modal fields
+    document.getElementById('modalDate').textContent = date;
+    document.getElementById('modalLength').textContent = data.length || "-";
+    document.getElementById('modalWeight').textContent = data.weight || "-";
+    document.getElementById('modalHeadCircumference').textContent = data.head_circumference || "-";
+    document.getElementById('modalChestCircumference').textContent = data.chest_circumference || "-";
+    document.getElementById('modalAge').textContent = data.age || "-";
+    document.getElementById('modalFindings').textContent = data.findings || "-";
+    document.getElementById('modalConsult').textContent = data.consult || "-";
+    document.getElementById('modalInstruction').textContent = data.instruction || "-";
+
+    // Display modal
+    document.getElementById('diagnosisModal').style.display = 'block';
+    }
+
+    function closeDiagnosisModal() {
+        // Hide modal
+        document.getElementById('diagnosisModal').style.display = 'none';
+    }
 </script>
 {% endblock %}

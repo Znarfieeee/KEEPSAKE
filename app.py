@@ -1,4 +1,4 @@
-from flask import Flask, render_template, redirect, session, url_for, request, flash
+from flask import Flask, json, render_template, redirect, session, url_for, request, flash
 from dbhelper import *
 from datetime import datetime
 
@@ -280,19 +280,32 @@ def add_prescription(patient_id):
 
 @app.route("/prescriptions/<int:patient_id>")
 def presc_info(patient_id):
+    # Ensure the user is logged in
     if not session.get('logged_in'):
+        flash("You must be logged in to access this page.", "warning")
         return redirect(url_for('login'))
 
+    # Fetch patient information
     patient = getpatientbyid(patient_id)
     if not patient:
         flash("Patient not found!", "error")
         return redirect(url_for('index'))
 
+    # Fetch prescriptions
     prescriptions = getprescriptionsbypatientid(patient_id)
+    if not prescriptions:
+        flash("No prescriptions found for this patient.", "info")
 
-    dr_name = session.get('dr_name', '')
-    spclty = session.get('spclty', '')
+    # Add serialized JSON for prescription details to each prescription
+    for prescription in prescriptions:
+        prescription_details = prescription.get('PRESCRIPTION_DETAILS', {})
+        prescription['PRESCRIPTION_DETAILS_JSON'] = json.dumps(prescription_details)
 
+    # Fetch doctor information from session
+    dr_name = session.get('dr_name', 'Unknown Doctor')
+    spclty = session.get('spclty', 'General Practitioner')
+
+    # Render the template
     return render_template(
         "presc_inf.html", 
         patient=patient, 
@@ -300,7 +313,6 @@ def presc_info(patient_id):
         dr_name=dr_name,
         spclty=spclty
     )
-    
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -364,49 +376,6 @@ def index():
 
     dr_name = session.get('dr_name', '')
     spclty = session.get('spclty', '')
-    
-@app.route("/addprescription/<int:patient_id>", methods=['POST'])
-def add_prescription(patient_id):
-    if not session.get('logged_in'):
-        return redirect(url_for('login'))
-
-    try:
-        prescription_date = request.form.get('prescription_date').strip()
-        diagnosis = request.form.get('diagnosis').strip()
-
-        success = addnewprescription(patient_id, prescription_date, diagnosis)
-        if success:
-            flash("Prescription added successfully.", "success")
-        else:
-            flash("Failed to add prescription.", "error")
-    except Exception as e:
-        flash(f"An error occurred: {e}", "error")
-
-    return redirect(url_for('pat_info', patient_id=patient_id))
-
-@app.route("/prescriptions/<int:patient_id>")
-def presc_info(patient_id):
-    if not session.get('logged_in'):
-        return redirect(url_for('login'))
-
-    patient = getpatientbyid(patient_id)
-    if not patient:
-        flash("Patient not found!", "error")
-        return redirect(url_for('index'))
-
-    prescriptions = getprescriptionsbypatientid(patient_id)
-
-    dr_name = session.get('dr_name', '')
-    spclty = session.get('spclty', '')
-
-    return render_template(
-        "presc_inf.html", 
-        patient=patient, 
-        prescriptions=prescriptions,
-        dr_name=dr_name,
-        spclty=spclty
-    )
-    
 
     return render_template("index.html", pagetitle = "Keepsake", patients=patients, dr_name=dr_name, spclty=spclty)
 
