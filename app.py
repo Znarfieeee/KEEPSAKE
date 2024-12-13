@@ -1,9 +1,13 @@
 from flask import Flask, render_template, redirect, session, url_for, request, flash
 from dbhelper import *
-from datetime import datetime
+from datetime import datetime, timedelta
+import os
 
 app = Flask(__name__)
-app.secret_key = "!@#$%tidert"
+app.secret_key = os.environ.get('SECRET_KEY', 'fallback-key-for-development')
+app.permanent_session_lifetime = timedelta(minutes=30)  # Session timeout
+app.config['SESSION_COOKIE_SECURE'] = True  # Only send cookie over HTTPS
+app.config['SESSION_COOKIE_HTTPONLY'] = True  # Prevent JavaScript access to session cookie
 
 @app.route("/")
 def index():
@@ -37,9 +41,13 @@ def pat_info(patient_id):
     dob = patient.get('DT_OF_BIRTH')
     age = None
     if dob:
-        dob = dob.date() if isinstance(dob, datetime) else dob
-        today = datetime.today()
-        age = today.year - dob.year - ((today.month, today.day) < (dob.month, dob.day))
+        try:
+            dob = dob.date() if isinstance(dob, datetime) else dob
+            today = datetime.today()
+            age = today.year - dob.year - ((today.month, today.day) < (dob.month, dob.day))
+        except Exception as e:
+            age = None
+            flash("Error calculating age", "error")
 
     prescriptions = getprescriptionsbypatientid(patient_id)
 
@@ -63,6 +71,10 @@ def add_prescription(patient_id):
     try:
         prescription_date = request.form.get('prescription_date').strip()
         diagnosis = request.form.get('diagnosis').strip()
+        
+        if not prescription_date or not diagnosis:
+            flash("Please fill in all required fields.", "error")
+            return redirect(url_for('pat_info', patient_id=patient_id))
         
         success = addnewprescription(patient_id, prescription_date, diagnosis)
         if success:
