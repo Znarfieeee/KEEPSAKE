@@ -489,46 +489,86 @@ def patients_tab():
     try:
         # Get all patients records (for all-patients tab)
         sql_all = """
-        SELECT * FROM (
+        WITH LatestOperations AS (
             SELECT 
-                t.LOG_ID,
-                t.PT_ID,
-                CASE t.OPERATION 
-                    WHEN 'INSERT' THEN 'INSERTED'
-                    WHEN 'UPDATE' THEN 'UPDATED'
-                    ELSE t.OPERATION 
-                END as OPERATION,
-                t.MODIFIED_DATE,
-                p.PT_FNAME,
-                p.PT_LNAME
-            FROM 
-                TRANSACTION_LOG t
-                JOIN PATIENT_INFORMATION p ON t.PT_ID = p.PT_ID
-            WHERE t.OPERATION IN ('INSERT', 'UPDATE')
-            
-            UNION ALL
-            
-            SELECT 
-                t.LOG_ID,
-                t.PT_ID,
-                CASE t.OPERATION 
-                    WHEN 'CHECK-UP' THEN 'CHECK UP'
-                    ELSE t.OPERATION 
-                END as OPERATION,
-                t.MODIFIED_DATE,
-                p.PT_FNAME,
-                p.PT_LNAME
-            FROM 
-                TRANSACTION_LOG_OLD_PT t
-                JOIN PATIENT_INFORMATION p ON t.PT_ID = p.PT_ID
-            WHERE t.OPERATION IN ('CHECK-UP', 'IMMUNIZATION')
-        ) AS combined_results
-        ORDER BY MODIFIED_DATE DESC
+                PT_ID,
+                LOG_ID,
+                OPERATION,
+                MODIFIED_DATE,
+                PT_FNAME,
+                PT_LNAME,
+                ROW_NUMBER() OVER (PARTITION BY PT_ID ORDER BY MODIFIED_DATE DESC) as rn
+            FROM (
+                SELECT 
+                    t.LOG_ID,
+                    t.PT_ID,
+                    CASE t.OPERATION 
+                        WHEN 'INSERT' THEN 'INSERTED'
+                        WHEN 'UPDATE' THEN 'UPDATED'
+                        ELSE t.OPERATION 
+                    END as OPERATION,
+                    t.MODIFIED_DATE,
+                    p.PT_FNAME,
+                    p.PT_LNAME
+                FROM 
+                    TRANSACTION_LOG t
+                    JOIN PATIENT_INFORMATION p ON t.PT_ID = p.PT_ID
+                WHERE t.OPERATION IN ('INSERT', 'UPDATE')
+                
+                UNION ALL
+                
+                SELECT 
+                    t.LOG_ID,
+                    t.PT_ID,
+                    CASE t.OPERATION 
+                        WHEN 'CHECK-UP' THEN 'CHECK UP'
+                        ELSE t.OPERATION 
+                    END as OPERATION,
+                    t.MODIFIED_DATE,
+                    p.PT_FNAME,
+                    p.PT_LNAME
+                FROM 
+                    TRANSACTION_LOG_OLD_PT t
+                    JOIN PATIENT_INFORMATION p ON t.PT_ID = p.PT_ID
+                WHERE t.OPERATION IN ('CHECK-UP', 'IMMUNIZATION')
+            ) AS combined_results
+        )
+        SELECT *
+        FROM LatestOperations
+        WHERE rn = 1  -- Only get the latest operation for each patient
+        ORDER BY PT_ID ASC
         """
         all_patients_records = getallprocess(sql_all)
 
         # Get patients records (for patients tab)
         sql_patients = """
+        WITH LatestOperations AS (
+            SELECT 
+                PT_ID,
+                OPERATION,
+                MODIFIED_DATE,
+                LOG_ID,
+                ROW_NUMBER() OVER (PARTITION BY PT_ID ORDER BY MODIFIED_DATE DESC) as rn
+            FROM (
+                SELECT 
+                    PT_ID,
+                    'UPDATED' as OPERATION,
+                    MODIFIED_DATE,
+                    LOG_ID
+                FROM TRANSACTION_LOG 
+                WHERE OPERATION = 'UPDATE'
+                
+                UNION ALL
+                
+                SELECT 
+                    PT_ID,
+                    OPERATION,
+                    MODIFIED_DATE,
+                    LOG_ID
+                FROM TRANSACTION_LOG_OLD_PT
+                WHERE OPERATION IN ('CHECK UP', 'IMMUNIZATION')
+            ) combined
+        )
         SELECT DISTINCT 
             p.PT_ID,
             p.PT_FNAME,
@@ -537,31 +577,28 @@ def patients_tab():
             t.MODIFIED_DATE,
             t.LOG_ID
         FROM PATIENT_INFORMATION p
-        INNER JOIN (
-            SELECT 
-                PT_ID,
-                'UPDATED' as OPERATION,
-                MODIFIED_DATE,
-                LOG_ID
-            FROM TRANSACTION_LOG 
-            WHERE OPERATION = 'UPDATE'
-            
-            UNION ALL
-            
-            SELECT 
-                PT_ID,
-                OPERATION,
-                MODIFIED_DATE,
-                LOG_ID
-            FROM TRANSACTION_LOG_OLD_PT
-            WHERE OPERATION IN ('CHECK UP', 'IMMUNIZATION')
-        ) t ON p.PT_ID = t.PT_ID
+        INNER JOIN LatestOperations t ON p.PT_ID = t.PT_ID
         WHERE p.ISACTIVE = 1
-        ORDER BY t.MODIFIED_DATE DESC
+            AND t.rn = 1
+        ORDER BY p.PT_ID ASC
         """
         
         # Get new patients records (for new-patients tab)
         sql_new = """
+        WITH LatestOperations AS (
+            SELECT 
+                PT_ID,
+                OPERATION,
+                MODIFIED_DATE,
+                ROW_NUMBER() OVER (PARTITION BY PT_ID ORDER BY MODIFIED_DATE DESC) as rn
+            FROM (
+                SELECT PT_ID, OPERATION, MODIFIED_DATE
+                FROM TRANSACTION_LOG
+                UNION ALL
+                SELECT PT_ID, OPERATION, MODIFIED_DATE
+                FROM TRANSACTION_LOG_OLD_PT
+            ) all_operations
+        )
         SELECT DISTINCT
             p.PT_ID,
             p.PT_FNAME,
@@ -571,10 +608,12 @@ def patients_tab():
             t.LOG_ID
         FROM PATIENT_INFORMATION p
         INNER JOIN TRANSACTION_LOG t ON p.PT_ID = t.PT_ID
+        LEFT JOIN LatestOperations lo ON p.PT_ID = lo.PT_ID AND lo.rn = 1
         WHERE t.OPERATION = 'INSERT'
             AND p.ISACTIVE = 1
             AND t.MODIFIED_DATE >= DATEADD(day, -30, GETDATE())
-        ORDER BY t.MODIFIED_DATE DESC
+            AND (lo.OPERATION = 'INSERT' OR lo.OPERATION IS NULL)  -- Only show if latest operation is INSERT
+        ORDER BY p.PT_ID ASC
         """
         
         patients_records = getallprocess(sql_patients)
