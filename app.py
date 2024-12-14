@@ -207,7 +207,6 @@ def pat_info(patient_id):
         today = datetime.today()
         age_years = today.year - dob.year - ((today.month, today.day) < (dob.month, dob.day))
         if age_years == 0:
-            # If age is 0 years, calculate the months
             age_months = (today.year - dob.year) * 12 + today.month - dob.month - (today.day < dob.day)
             age = f"{age_months} months"
         else:
@@ -273,21 +272,31 @@ def login():
             return redirect(url_for('login'))
         
         sql = """
-            SELECT a.*, d.DR_NAME, d.SPLTY 
+            SELECT a.USERTYPE, a.USER_FNAME, a.USER_LNAME, a.EMP_ID, a.PASSWORD, 
+                   d.DR_NAME, d.SPLTY, d.DR_ID 
             FROM ACCOUNTS a
             LEFT JOIN DOCTOR d ON a.EMP_ID = d.DR_ID
             WHERE a.EMP_ID = ? AND a.PASSWORD = ?
         """
         user = getallprocess(sql, (empid, password))
         
-        if user:
-            print(user)
-            session['logged_in'] = True
-            session['user'] = user[0]
+        if user:  # Check if the query returned any data
+            user_data = user[0]  # Safely access the first row
             
-            session['dr_name'] = user[0].get('DR_NAME', '').upper()
-            session['spclty'] = user[0].get('SPLTY', '').upper()
-            session['dr_id'] = user[0].get('DR_ID')
+            session['logged_in'] = True
+            session['user'] = user_data
+            session['user_type'] = user_data.get('USERTYPE')  # Determine if staff or doctor
+
+            # Combine USER_FNAME and USER_LNAME for staff users
+            user_fname = user_data.get('USER_FNAME', '').strip()
+            user_lname = user_data.get('USER_LNAME', '').strip()
+            session['staff_name'] = f"{user_fname} {user_lname}".upper()
+            
+            # Safely handle doctor-specific fields
+            session['dr_name'] = (user_data.get('DR_NAME') or '').upper()
+            session['spclty'] = (user_data.get('SPLTY') or '').upper()
+            session['dr_id'] = user_data.get('DR_ID')
+
             return redirect(url_for('index'))
         else:
             flash("Invalid username or password.", "error")
@@ -320,10 +329,12 @@ def index():
         else:
             patient['PT_FULLNAME'] = f"{pt_fname} {pt_lname}".strip()
 
+
     dr_name = session.get('dr_name', '')
     spclty = session.get('spclty', '')
+    staff_name = session.get('staff_name', '')
     
-    return render_template("index.html", patients=patients, dr_name=dr_name, spclty=spclty)
+    return render_template("index.html", patients=patients, dr_name=dr_name, spclty=spclty, staff_name=staff_name)
     
 @app.route("/addprescription/<int:patient_id>", methods=['POST'])
 def add_prescription(patient_id):
@@ -445,7 +456,7 @@ def dashboard_details():
                          dr_name=session.get('dr_name', ''),
                          spclty=session.get('spclty', ''))
 
-@app.route('/reports')
+
 @app.route('/reports/patients')
 def patients_tab():
     if not session.get('logged_in'):
