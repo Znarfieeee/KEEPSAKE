@@ -9,23 +9,23 @@
             </a>
             <h1 style="margin-left: 10px;">{{ patient['PT_FNAME'] }} {{ patient['PT_LNAME'] }}</h1>
         </div>
-        <div class="action-btn">
-            <button class="deactivate-btn" onclick="deactivatePatient('{{ patient.PT_ID }}')">DEACTIVATE</button>
-        </div>
     </div>
 
     <!-- Tab navigation -->
     <div class="tabs">
         <button id="information" onclick="toPatInfo('{{ patient.PT_ID }}')">INFORMATION</button>
-        <button id="immunization">IMMUNIZATION</button>
+        <button id="immunization" onclick="toImmunization('{{ patient.PT_ID }}')">IMMUNIZATION</button>
         <button class="active" id="prescription">PRESCRIPTION</button>
     </div>
 
     <!-- Tab content -->
     <div class="tab-content">
         <div class="prescription-info">
-            <div class="pat-detail-title">           
-                 <button class="np-btn" onclick="showNewPrescriptionModal()">+ New Prescription</button>
+            <div class="pat-detail-title" style="display: flex; justify-content: space-between; align-items: center;">
+                <span>PRESCRIPTION RECORDS</span>
+                <button class="add-presc-btn" onclick="showNewPrescriptionModal()">
+                    <i class="fas fa-plus"></i> ADD PRESCRIPTION
+                </button>
             </div>
             <table class="prescription-table">
                 <thead> 
@@ -266,6 +266,62 @@
     document.getElementById('diagnosisModal').style.display = 'none';
     }   
 
+    function toImmunization(patientId) {
+        window.location.href = `/patient/${patientId}#immunization`;
+    }
 
 </script>
+<style>
+    .add-presc-btn {
+        background-color: #d6f5d6;
+        color: #378f75;
+        border: none;
+        padding: 8px 16px;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 14px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        transition: background-color 0.3s ease;
+    }
+    
+    .add-presc-btn:hover {
+        background-color: #c1ecc1;
+    }
+    
+    .add-presc-btn i {
+        font-size: 12px;
+    }
+    
+    .pat-detail-title {
+        background-color: #f8f9fa;
+        padding: 15px;
+        border-radius: 4px;
+        margin-bottom: 15px;
+    }
+    
+    .prescription-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 15px;
+    }
+    
+    .prescription-table th,
+    .prescription-table td {
+        padding: 12px;
+        text-align: left;
+        border-bottom: 1px solid #ddd;
+    }
+    
+    .prescription-table tr:hover {
+        background-color: #f5f5f5;
+        cursor: pointer;
+    }
+    
+    .prescription-table th {
+        background-color: #f8f9fa;
+        font-weight: bold;
+    }
+</style>
 {% endblock %}
