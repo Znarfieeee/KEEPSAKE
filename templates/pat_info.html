@@ -8,126 +8,150 @@
                 </a>
                 <h1 style="margin-left: 10px;">{{ patient['PT_FNAME'] }} {{patient['PT_LNAME']}}</h1>
             </div>
-            <div class="action-btn">
-                <button class="edit-btn" onclick="editPatient()">EDIT</button>
-                <button class="deactivate-btn" onclick="deactivatePatient('{{ patient.PT_ID }}')">DEACTIVATE</button>
-            </div>
         </div>
 
+        <!-- Tabs -->
         <div class="tabs">
-            <button id="information" onclick="showInfoTab()">INFORMATION</button>
+            <button class="active" id="information">INFORMATION</button>
             <button id="immunization">IMMUNIZATION</button>
-            <button id="prescription" onclick="redirectToPrescription('{{ patient.PT_ID }}')">PRESCRIPTION</button>
+            <button id="prescription">PRESCRIPTION</button>
         </div>
-        
-        <script>
-            function showInfoTab() {
-                // Logic to show Information tab, if needed
-            }
-        
-            function redirectToPrescription(patientId) {
-                // Redirect to prescription page
-                window.location.href = `/prescriptions/${patientId}`;
-            }
-        </script>
-        
 
         <div class="tab-content">
-            <div class="pt-info">
-                <div class="pat-detail-title">PATIENT'S INFORMATION</div>
-                <div class="info-grid">
-                    <div>
-                        <div class="label">LAST NAME</div>
-                        <div class="value">{{ patient['PT_LNAME'] }}</div>
+            <div class="tab-panel" id="information-panel">
+                <div class="pt-info">
+                    <div class="pat-detail-title">PATIENT'S INFORMATION</div>
+                    <div class="info-grid">
+                        <div>
+                            <div class="label">LAST NAME</div>
+                            <div class="value">{{ patient['PT_LNAME'] }}</div>
+                        </div>
+                        <div>
+                            <div class="label">FIRST NAME</div>
+                            <div class="value">{{ patient['PT_FNAME'] }}</div>
+                        </div>
+                        <div>
+                            <div class="label">MIDDLE NAME</div>
+                            <div class="value">{{ patient['PT_MNAME'] }}</div>
+                        </div>
+                        <div>
+                            <div class="label">AGE</div>
+                            <div class="value">{{age}}</div>
+                        </div>
+                        <div>
+                            <div class="label">BIRTHDATE</div>
+                            <div class="value">{{ patient['DT_OF_BIRTH'] }}</div>
+                        </div>
                     </div>
-                    <div>
-                        <div class="label">FIRST NAME</div>
-                        <div class="value">{{ patient['PT_FNAME'] }}</div>
+                </div>
+
+                <div class="contact-info">
+                    <div class="pat-detail-title">CONTACT DETAILS</div>
+                    <div class="info-grid">
+                        <div>
+                            <div class="label">MOTHER'S NAME</div>
+                            <div class="value">{{ patient['MT_NAME'] }}</div>
+                        </div>
+                        <div>
+                            <div class="label">FATHER'S NAME</div>
+                            <div class="value">{{ patient['FT_NAME'] }}</div>
+                        </div>
+                        <div>
+                            <div class="label">CONTACT NUMBER</div>
+                            <div class="value">{{ patient['CON_NUM'] }}</div>
+                        </div>
+                        <div>
+                            <div class="label">EMAIL</div>
+                            <div class="value">{{ patient['EMAIL_ADD'] }}</div>
+                        </div>
                     </div>
-                    <div>
-                        <div class="label">MIDDLE NAME</div>
-                        <div class="value">{{ patient['PT_MNAME'] }}</div>
+                </div>
+                <div class="screeningtest-info">
+                    <div class="pat-detail-title">SCREENING TEST</div>
+                    <table class="screening-test-table">
+                        <thead>
+                            <tr>
+                                <th>DATE</th>
+                                <th>DESCRIPTION</th>
+                                <th>REMARKS</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for test in test_data %}
+                                <tr>
+                                    <td>{{ test.date or 'N/A' }}</td>
+                                    <td>{{ test.description or 'N/A' }}</td>
+                                    <td>{{ test.remarks or 'N/A' }}</td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                    <table class="secondtable">
+                        <thead>
+                            <tr>
+                                <th>DATE</th>
+                                <th>DESCRIPTION</th>
+                                <th>RIGHT</th>
+                                <th>LEFT</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                {% for test in htest %}
+                                    <td>{{ test.date or 'N/A' }}</td>
+                                    <td>{{ test.description or 'N/A' }}</td>
+                                    <td>{{ test.right_ear or 'N/A' }}</td>
+                                    <td>{{ test.left_ear or 'N/A' }}</td>
+                                {% endfor %}
+                            </tr>
+                            <tr>
+                                {% for test in ptest %}
+                                    <td>{{ test.date or 'N/A' }}</td>
+                                    <td>{{ test.description or 'N/A' }}</td>
+                                    <td>{{ test.right_hand or 'N/A' }}</td>
+                                    <td>{{ test.left_hand or 'N/A' }}</td>
+                                {% endfor %}
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="tab-panel" id="immunization-panel" style="display: none;">
+                <div class="immunization-info">
+                    <div class="pat-detail-title" style="display: flex; justify-content: space-between; align-items: center;">
+                        <span>IMMUNIZATION RECORDS</span>
+                        <button class="add-vax-btn" onclick="addVax()">
+                            <i class="fas fa-plus"></i> ADD VACCINE
+                        </button>
                     </div>
-                    <div>
-                        <div class="label">AGE</div>
-                        <div class="value">{{age}}</div>
-                    </div>
-                    <div>
-                        <div class="label">BIRTHDATE</div>
-                        <div class="value">{{ patient['DT_OF_BIRTH'] }}</div>
+                    <div class="vaccination-records">
+                        <table class="vaccination-table">
+                            <thead>
+                                <tr>
+                                    <th>Vaccine</th>
+                                    <th>Dosage</th>
+                                    <th>Date</th>
+                                    <th>Remarks</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for vaccine in vaccines %}
+                                <tr onclick="showVaccineModal('{{ vaccine.VAX }}', '{{ vaccine.DOSAGE }}', '{{ vaccine.DATE }}', '{{ vaccine.REMARKS }}')">
+                                    <td>{{ vaccine.VAX }}</td>
+                                    <td>{{ vaccine.DOSAGE }}</td>
+                                    <td>{{ vaccine.DATE }}</td>
+                                    <td>{{ vaccine.REMARKS }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
                     </div>
                 </div>
             </div>
 
-            <div class="contact-info">
-                <div class="pat-detail-title">CONTACT DETAILS</div>
-                <div class="info-grid">
-                    <div>
-                        <div class="label">MOTHER'S NAME</div>
-                        <div class="value">{{ patient['MT_NAME'] }}</div>
-                    </div>
-                    <div>
-                        <div class="label">FATHER'S NAME</div>
-                        <div class="value">{{ patient['FT_NAME'] }}</div>
-                    </div>
-                    <div>
-                        <div class="label">CONTACT NUMBER</div>
-                        <div class="value">{{ patient['CON_NUM'] }}</div>
-                    </div>
-                    <div>
-                        <div class="label">EMAIL</div>
-                        <div class="value">{{ patient['EMAIL_ADD'] }}</div>
-                    </div>
-                </div>
-            </div>
-            <div class="screeningtest-info">
-                <div class="pat-detail-title">SCREENING TEST</div>
-                <table class="screening-test-table">
-                    <thead>
-                        <tr>
-                            <th>DATE</th>
-                            <th>DESCRIPTION</th>
-                            <th>REMARKS</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for test in test_data %}
-                            <tr>
-                                <td>{{ test.date or 'N/A' }}</td>
-                                <td>{{ test.description or 'N/A' }}</td>
-                                <td>{{ test.remarks or 'N/A' }}</td>
-                            </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-                <table class="secondtable">
-                    <thead>
-                        <tr>
-                            <th>DATE</th>
-                            <th>DESCRIPTION</th>
-                            <th>RIGHT</th>
-                            <th>LEFT</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            {% for test in htest %}
-                                <td>{{ test.date or 'N/A' }}</td>
-                                <td>{{ test.description or 'N/A' }}</td>
-                                <td>{{ test.right_ear or 'N/A' }}</td>
-                                <td>{{ test.left_ear or 'N/A' }}</td>
-                            {% endfor %}
-                        </tr>
-                        <tr>
-                            {% for test in ptest %}
-                                <td>{{ test.date or 'N/A' }}</td>
-                                <td>{{ test.description or 'N/A' }}</td>
-                                <td>{{ test.right_hand or 'N/A' }}</td>
-                                <td>{{ test.left_hand or 'N/A' }}</td>
-                            {% endfor %}
-                        </tr>
-                    </tbody>
-                </table>
+            <div class="tab-panel" id="prescription-panel" style="display: none;">
+                <!-- Prescription content will go here -->
             </div>
         </div>
     </div>
@@ -171,11 +195,68 @@
                     <input class="w3-input" type="email" id="edit_email_add" name="email_add" value="{{ patient['EMAIL_ADD'] if patient['EMAIL_ADD'] else '' }}">
                 </p>
                 <div class="w3-center ad">
-                    <button type="button" onclick="closemodal()" class="modalcancel">Cancel</button>
+                    <button type="button" onclick="closeEditModal()" class="modalcancel">Cancel</button>
                     <button type="submit" class="modaladd">Save</button>
                 </div>
             </div>
         </form>
+    </div>
+    <div id="addVaxModal" class="w3-modal">
+        <form action="/add_vax" method="POST" class="w3-modal-content w3-card-4 w3-round-xlarge" style="width: 30%;">
+            <header class="w3-container" style="display: flex; justify-content: space-between; align-items: center; padding: 10px 15px;">
+                <div style="display: flex; align-items: center;">
+                    <span>VACCINE</span>
+                </div>
+            </header>
+            <div class="w3-container" style="padding: 15px;">
+                <input type="hidden" name="pt_id" value="{{ patient.PT_ID }}">
+                <div class="vax-input-container">
+                    <input class="w3-input" type="text" name="vaccine" placeholder="VAX NAME">
+                    <select class="w3-input" name="dosage">
+                        <option value="" disabled selected>DOSAGE</option>
+                        <option value="1">1</option>
+                        <option value="2">2</option>
+                        <option value="3">3</option>
+                    </select>
+                    <div id="dateInputs">
+                        <div class="date-input-container">
+                            <input class="w3-input" type="date" name="date1" placeholder="DATE">
+                        </div>
+                    </div>
+                    <textarea class="w3-input" name="remarks" placeholder="REMARKS" style="resize: none; height: 80px;"></textarea>
+                </div>
+                <div style="text-align: right; margin-top: 15px; display: flex; justify-content: flex-end; gap: 10px;">
+                    <button type="button" class="cancel-btn" onclick="closeVaxModal()">Cancel</button>
+                    <button type="submit" class="update-btn">SAVE</button>
+                </div>
+            </div>
+        </form>
+    </div>
+    <div id="vaccineDetailsModal" class="w3-modal">
+        <div class="w3-modal-content w3-card-4 w3-round-xlarge" style="width: 50%;">
+            <header class="w3-container" style="display: flex; justify-content: space-between; align-items: center; padding: 15px;">
+                <h3 id="modalVaccineName"></h3>
+                <span onclick="closeVaccineModal()" class="w3-button">&times;</span>
+            </header>
+            <div class="w3-container" style="padding: 15px;">
+                <form id="vaccineForm" method="POST" action="/update_vaccine">
+                    <input type="hidden" name="vaccine_name" id="modalVaccineNameInput">
+                    <input type="hidden" name="pt_id" value="{{ patient.PT_ID }}">
+                    
+                    <div class="doses-container">
+                        <h4>Vaccine Doses</h4>
+                        <div id="dosesList" class="doses-list">
+                            <!-- Dose inputs will be added here dynamically -->
+                        </div>
+                    </div>
+                    
+                    <div class="w3-center" style="margin-top: 20px;">
+                        <button type="button" onclick="closeVaccineModal()" class="cancel-btn">Cancel</button>
+                        <button type="submit" class="update-btn">Save</button>
+                    </div>
+                </form>
+            </div>
+        </div>
     </div>
     {% with messages = get_flashed_messages(with_categories=true) %}
         {% if messages %}
@@ -183,21 +264,19 @@
                 {% for category, message in messages %}
                     <div class="flash {{ category }}">
                         <span>{{ message }}</span>
+                        <!-- <button onclick="this.parentElement.style.display='none';">OK</button> -->
                     </div>
                 {% endfor %}
             </div>
         {% endif %}
     {% endwith %}
     <script>
-        function redirectToPrescription(patientId) {
-                window.location.href = `/prescriptions/${patientId}`;
-            }
         
         function editPatient() {
 
             document.getElementById('editPatientModal').style.display = 'block';
         }
-        function closemodal() {
+        function closeEditModal() {
             document.getElementById('editPatientModal').style.display = 'none';
         }
 
@@ -224,5 +303,627 @@
             }
         }
 
+        function active() {
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            const tabs = document.querySelectorAll('.tabs button');
+            const panels = document.querySelectorAll('.tab-panel');
+            const actionButtons = document.getElementById('action-buttons');
+            
+            tabs.forEach(tab => {
+                tab.addEventListener('click', () => {
+                    // Remove active class from all tabs
+                    tabs.forEach(t => t.classList.remove('active'));
+                    // Add active class to clicked tab
+                    tab.classList.add('active');
+                    
+                    // Handle tab navigation
+                    if (tab.id === 'information') {
+                        // Hide all panels
+                        panels.forEach(panel => panel.style.display = 'none');
+                        // Show the corresponding panel
+                        document.getElementById(`${tab.id}-panel`).style.display = 'block';
+                    } else if (tab.id === 'prescription') {
+                        window.location.href = `/prescriptions/{{ patient.PT_ID }}`;
+                    } else if (tab.id === 'immunization') {
+                        // Hide all panels
+                        panels.forEach(panel => panel.style.display = 'none');
+                        // Show the corresponding panel
+                        document.getElementById(`${tab.id}-panel`).style.display = 'block';
+                    }
+                    
+                    // Show/hide action buttons based on active tab
+                    if (tab.id === 'immunization') {
+                        actionButtons.style.display = 'none';
+                    } else {
+                        actionButtons.style.display = 'block';
+                    }
+                });
+            });
+
+            // Show information panel by default
+            document.getElementById('information-panel').style.display = 'block';
+        });
+
+        function addVax() {
+            const modal = document.getElementById('addVaxModal');
+            const form = modal.querySelector('form');
+            
+            // Get all form elements
+            const vaccineInput = form.querySelector('[name="vaccine"]');
+            const dosageSelect = form.querySelector('[name="dosage"]');
+            const dateInputsContainer = document.getElementById('dateInputs');
+            const remarksInput = form.querySelector('[name="remarks"]');
+            
+            // Enable and clear all inputs, but only make date required
+            vaccineInput.value = '';
+            vaccineInput.disabled = false;
+            vaccineInput.required = false;  // Remove required
+            vaccineInput.style.backgroundColor = 'white';
+            vaccineInput.style.cursor = 'text';
+            
+            // Enable dosage select
+            dosageSelect.value = '';
+            dosageSelect.disabled = false;
+            dosageSelect.required = false;  // Remove required
+            dosageSelect.style.backgroundColor = 'white';
+            dosageSelect.style.cursor = 'pointer';
+            
+            // Clear and reset date inputs - only this is required
+            dateInputsContainer.innerHTML = `
+                <div class="date-input-container">
+                    <input class="w3-input" type="date" name="date1" placeholder="DATE" required>
+                </div>
+            `;
+            
+            // Enable and clear remarks
+            remarksInput.value = '';
+            remarksInput.disabled = false;
+            remarksInput.required = false;  // Remove required
+            remarksInput.style.backgroundColor = 'white';
+            remarksInput.style.cursor = 'text';
+            
+            // Change modal title
+            modal.querySelector('span').textContent = 'ADD VACCINE';
+            
+            // Show the Update button
+            const updateBtn = form.querySelector('.update-btn');
+            if (updateBtn) {
+                updateBtn.style.display = 'block';
+            }
+            
+            // Show modal
+            modal.style.display = 'block';
+        }
+
+        function closeVaxModal() {
+            const modal = document.getElementById('addVaxModal');
+            const form = modal.querySelector('form');
+            
+            // Reset all fields to enabled state
+            const vaccineInput = form.querySelector('[name="vaccine"]');
+            const dosageSelect = form.querySelector('[name="dosage"]');
+            const dateInput = form.querySelector('[name="date1"]');
+            const remarksInput = form.querySelector('[name="remarks"]');
+            
+            vaccineInput.readOnly = false;
+            vaccineInput.style.backgroundColor = 'white';
+            vaccineInput.style.cursor = 'text';
+            
+            dosageSelect.disabled = false;
+            dosageSelect.style.backgroundColor = 'white';
+            dosageSelect.style.cursor = 'pointer';
+            
+            dateInput.readOnly = false;
+            dateInput.style.backgroundColor = 'white';
+            dateInput.style.cursor = 'pointer';
+            
+            remarksInput.readOnly = false;
+            remarksInput.style.backgroundColor = 'white';
+            remarksInput.style.cursor = 'text';
+            
+            // Reset modal title
+            modal.querySelector('span').textContent = 'VACCINE';
+            
+            // Hide modal and reset form
+            modal.style.display = 'none';
+            form.reset();
+            showDateInputs(1);
+        }
+
+        function toggleLogout() {
+            const menu = document.getElementById('logoutMenu');
+            menu.style.display = menu.style.display === 'none' ? 'block' : 'none';
+        }
+
+        function logout() {
+            if (confirm('Are you sure you want to logout?')) {
+                window.location.href = "{{ url_for('logout') }}";
+            }
+        }
+
+        // Close menu when clicking outside
+        window.onclick = function(event) {
+            if (!event.target.matches('.user-icon')) {
+                const menu = document.getElementById('logoutMenu');
+                if (menu.style.display === 'block') {
+                    menu.style.display = 'none';
+                }
+            }
+        }
+
+        function setToday(btn) {
+            const today = new Date().toISOString().split('T')[0];
+            btn.previousElementSibling.value = today;
+        }
+
+        function showDateInputs(dosage) {
+            const dateInputs = document.getElementById('dateInputs');
+            dateInputs.innerHTML = `
+                <div class="date-input-container">
+                    <input class="w3-input" type="date" name="date1" placeholder="DATE" required>
+                </div>
+            `;
+        }
+
+        function editVax(name, doses, date, remarks) {
+            const modal = document.getElementById('addVaxModal');
+            const form = modal.querySelector('form');
+            
+            // Get all form elements
+            const vaccineInput = form.querySelector('[name="vaccine"]');
+            const dosageSelect = form.querySelector('[name="dosage"]');
+            const dateInputsContainer = document.getElementById('dateInputs');
+            const remarksInput = form.querySelector('[name="remarks"]');
+            
+            // Remove required from all fields first
+            form.querySelectorAll('input, select').forEach(el => {
+                el.required = false;
+            });
+            
+            // Set values and disable fields
+            vaccineInput.value = name;
+            vaccineInput.disabled = true;
+            vaccineInput.style.backgroundColor = '#f5f5f5';
+            vaccineInput.style.cursor = 'not-allowed';
+            
+            dosageSelect.value = doses;
+            dosageSelect.disabled = true;
+            dosageSelect.style.backgroundColor = '#f5f5f5';
+            dosageSelect.style.cursor = 'not-allowed';
+            
+            // Clear existing date inputs
+            dateInputsContainer.innerHTML = '';
+            
+            // Create date input for first dose (always disabled)
+            const firstDateDiv = document.createElement('div');
+            firstDateDiv.className = 'date-input-container';
+            const firstDateInput = document.createElement('input');
+            firstDateInput.className = 'w3-input';
+            firstDateInput.type = 'text';
+            firstDateInput.name = 'date1';
+            firstDateInput.value = date;
+            firstDateInput.disabled = true;
+            firstDateInput.style.backgroundColor = '#f5f5f5';
+            firstDateInput.style.cursor = 'not-allowed';
+            firstDateDiv.appendChild(firstDateInput);
+            dateInputsContainer.appendChild(firstDateDiv);
+            
+            // If total doses is more than 1, add input for next dose
+            if (doses > 1) {
+                const nextDoseDiv = document.createElement('div');
+                nextDoseDiv.className = 'date-input-container';
+                const nextDoseInput = document.createElement('input');
+                nextDoseInput.className = 'w3-input';
+                nextDoseInput.type = 'date';
+                nextDoseInput.name = 'date1';  // Changed to date1 to match backend
+                nextDoseInput.placeholder = 'Next Dose Date';
+                nextDoseInput.required = true;  // Only this field is required
+                nextDoseDiv.appendChild(nextDoseInput);
+                dateInputsContainer.appendChild(nextDoseDiv);
+            }
+            
+            remarksInput.value = remarks;
+            remarksInput.disabled = true;
+            remarksInput.style.backgroundColor = '#f5f5f5';
+            remarksInput.style.cursor = 'not-allowed';
+            
+            // Change modal title
+            modal.querySelector('span').textContent = doses > 1 ? 'ADD NEXT DOSE' : 'VACCINE DETAILS';
+            
+            // Show the Update button only if there are remaining doses
+            const updateBtn = form.querySelector('.update-btn');
+            if (updateBtn) {
+                updateBtn.style.display = doses > 1 ? 'block' : 'none';
+            }
+            
+            // Show modal
+            modal.style.display = 'block';
+        }
+
+        function addNextDose() {
+            const modal = document.getElementById('addVaxModal');
+            const form = modal.querySelector('form');
+            
+            // Get all form elements
+            const vaccineInput = form.querySelector('[name="vaccine"]');
+            const dosageSelect = form.querySelector('[name="dosage"]');
+            const dateInputsContainer = document.getElementById('dateInputs');
+            const remarksInput = form.querySelector('[name="remarks"]');
+            
+            // Set values and disable all inputs except date
+            vaccineInput.value = name;
+            vaccineInput.disabled = true;
+            vaccineInput.style.backgroundColor = '#f5f5f5';
+            vaccineInput.style.cursor = 'not-allowed';
+            vaccineInput.required = false;  // Remove required attribute
+            
+            dosageSelect.value = doses;
+            dosageSelect.disabled = true;
+            dosageSelect.style.backgroundColor = '#f5f5f5';
+            dosageSelect.style.cursor = 'not-allowed';
+            dosageSelect.required = false;  // Remove required attribute
+            
+            // Clear existing date inputs
+            dateInputsContainer.innerHTML = '';
+            
+            // Create date input for next dose (only this will be required)
+            const nextDoseDiv = document.createElement('div');
+            nextDoseDiv.className = 'date-input-container';
+            const nextDoseInput = document.createElement('input');
+            nextDoseInput.className = 'w3-input';
+            nextDoseInput.type = 'date';
+            nextDoseInput.name = 'date1';
+            nextDoseInput.required = true;  // Only the date is required
+            nextDoseDiv.appendChild(nextDoseInput);
+            dateInputsContainer.appendChild(nextDoseDiv);
+            
+            remarksInput.value = remarks;
+            remarksInput.disabled = true;
+            remarksInput.style.backgroundColor = '#f5f5f5';
+            remarksInput.style.cursor = 'not-allowed';
+            remarksInput.required = false;  // Remove required attribute
+            
+            // Change modal title
+            modal.querySelector('span').textContent = 'ADD NEXT DOSE';
+            
+            // Show the Update button
+            const updateBtn = form.querySelector('.update-btn');
+            if (updateBtn) {
+                updateBtn.style.display = 'block';
+            }
+            
+            // Show modal
+            modal.style.display = 'block';
+        }
+
+        function showVaccineModal(name, dosage, date, remarks) {
+            const modal = document.getElementById('vaccineDetailsModal');
+            const nameElement = document.getElementById('modalVaccineName');
+            const nameInput = document.getElementById('modalVaccineNameInput');
+            const dosesList = document.getElementById('dosesList');
+            
+            // Set vaccine name in header and hidden input
+            nameElement.textContent = name;
+            nameInput.value = name;
+            
+            // Clear previous doses
+            dosesList.innerHTML = '';
+            
+            // Create date inputs based on dosage
+            for (let i = 1; i <= dosage; i++) {
+                const doseDiv = document.createElement('div');
+                doseDiv.className = 'dose-entry';
+                doseDiv.innerHTML = `
+                    <div class="dose-label">${i}${getOrdinalSuffix(i)} Dose</div>
+                    <div class="dose-inputs">
+                        <input type="date" name="dose_date_${i}" class="w3-input" 
+                            ${i === parseInt(dosage) ? '' : 'disabled'} 
+                            ${i === parseInt(dosage) ? 'required' : ''}>
+                        <input type="text" name="dose_remarks_${i}" class="w3-input" 
+                            placeholder="Remarks" 
+                            ${i === parseInt(dosage) ? '' : 'disabled'}>
+                    </div>
+                `;
+                dosesList.appendChild(doseDiv);
+            }
+            
+            // Helper function for ordinal numbers
+            function getOrdinalSuffix(i) {
+                const j = i % 10,
+                      k = i % 100;
+                if (j == 1 && k != 11) return "st";
+                if (j == 2 && k != 12) return "nd";
+                if (j == 3 && k != 13) return "rd";
+                return "th";
+            }
+            
+            modal.style.display = 'block';
+        }
+
+        function closeVaccineModal() {
+            document.getElementById('vaccineDetailsModal').style.display = 'none';
+        }
     </script>
+    <style>
+        .logout-btn {
+            background-color: #ff4444;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-left: 10px;
+        }
+
+        .logout-btn:hover {
+            background-color: #cc0000;
+        }
+
+        .user-menu {
+            position: relative;
+            display: inline-block;
+            margin-right: 20px;
+        }
+
+        .logout-menu {
+            position: absolute;
+            right: 0;
+            top: 35px;
+            background-color: white;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            border-radius: 4px;
+            min-width: 120px;
+            z-index: 1000;
+        }
+
+        .logout-btn {
+            background: none;
+            border: none;
+            padding: 10px 15px;
+            width: 100%;
+            text-align: left;
+            cursor: pointer;
+            color: #4CAF50;  /* Match your app's green color */
+            font-weight: 500;
+        }
+
+        .logout-btn:hover {
+            background-color: #f5f5f5;
+        }
+
+        .user-icon {
+            opacity: 0.7;
+        }
+
+        .user-icon:hover {
+            opacity: 1;
+        }
+
+        .vax-input-container {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .vax-input-container input,
+        .vax-input-container textarea {
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+            width: 100%;
+        }
+
+        .update-btn {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            padding: 6px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .update-btn:hover {
+            background-color: #45a049;
+        }
+
+        .w3-modal-content {
+            border-radius: 8px !important;
+        }
+
+        .vax-input-container select {
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+            width: 100%;
+            background-color: white;
+            cursor: pointer;
+        }
+
+        .vax-input-container select:focus {
+            outline: none;
+            border-color: #4CAF50;
+        }
+
+        .date-input-container {
+            position: relative;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .today-btn {
+            background: none;
+            border: none;
+            color: #4CAF50;
+            cursor: pointer;
+            font-size: 14px;
+            padding: 4px 8px;
+            white-space: nowrap;
+        }
+
+        .today-btn:hover {
+            text-decoration: underline;
+        }
+
+        .date-input-container input[type="date"] {
+            flex: 1;
+        }
+
+        /* Style the calendar icon */
+        input[type="date"]::-webkit-calendar-picker-indicator {
+            cursor: pointer;
+        }
+
+        .cancel-btn {
+            background: none;
+            border: 1px solid #ddd;
+            padding: 6px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            color: #666;
+        }
+
+        .cancel-btn:hover {
+            background-color: #f5f5f5;
+        }
+
+        .vaccine-row {
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .vaccine-row:hover {
+            background-color: #f5f5f5;
+        }
+
+        .vaccination-table td {
+            vertical-align: top;
+            padding: 8px;
+        }
+
+        .add-vax-btn {
+            background-color: #d6f5d6;
+            color: #378f75;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: background-color 0.3s ease;
+        }
+        
+        .add-vax-btn:hover {
+            background-color: #c1ecc1;
+        }
+        
+        .add-vax-btn i {
+            font-size: 12px;
+        }
+        
+        .pat-detail-title {
+            background-color: #f8f9fa;
+            padding: 15px;
+            border-radius: 4px;
+            margin-bottom: 15px;
+        }
+
+        .dose-entry {
+            border-left: 4px solid #378f75;
+        }
+        
+        .update-btn {
+            background-color: #d6f5d6;
+            color: #378f75;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-left: 10px;
+        }
+        
+        .update-btn:hover {
+            background-color: #c1ecc1;
+        }
+
+        .w3-modal {
+            z-index: 3;
+            display: none;
+            padding-top: 100px;
+            position: fixed;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0,0,0,0.4);
+        }
+        
+        .w3-modal-content {
+            margin: auto;
+            background-color: #fff;
+            position: relative;
+            padding: 0;
+            outline: 0;
+            width: 600px;
+        }
+        
+        .cancel-btn {
+            background-color: #f8f9fa;
+            color: #666;
+            border: 1px solid #ddd;
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        
+        .cancel-btn:hover {
+            background-color: #e9ecef;
+        }
+
+        .doses-list {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        
+        .dose-entry {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 4px;
+            border-left: 4px solid #378f75;
+        }
+        
+        .dose-label {
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: #378f75;
+        }
+        
+        .dose-inputs {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .dose-inputs input[type="date"] {
+            flex: 1;
+        }
+        
+        .dose-inputs input[type="text"] {
+            flex: 2;
+        }
+        
+        .dose-inputs input:disabled {
+            background-color: #e9ecef;
+            cursor: not-allowed;
+        }
+    </style>
 {% endblock %}

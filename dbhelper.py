@@ -4,7 +4,7 @@ try:
     # Establish database connection
     db = odbc.connect(
         'DRIVER=ODBC Driver 11 for SQL Server;' 
-        'SERVER=PRNSDAGREAT;'                  
+        'SERVER=LAPTOP-D3C3D5MJ\SQLEXPRESS;'                  
         'DATABASE=KEEPSAKE;'           
         'Trusted_Connection=yes;'          
         'Encrypt=yes;'                       
@@ -62,6 +62,24 @@ try:
             WHERE PT_ID = ?
         """
         return getallprocess(sql, (patient_id,))
+    
+    def get_vaccines_for_patient(patient_id):
+        sql = """
+        SELECT VAX, DOSAGE, [DATE], REMARKS
+        FROM IMMUNIZATION_RECORD
+        WHERE PT_ID = ?
+        ORDER BY [DATE] DESC
+        """
+        return getallprocess(sql, (patient_id,))
+    
+    def get_current_doses(patient_id, vaccine_name):
+        sql = """
+        SELECT MAX(DOSAGE) as current_doses
+        FROM IMMUNIZATION_RECORD
+        WHERE PT_ID = ? AND VAX = ?
+        """
+        result = getallprocess(sql, (patient_id, vaccine_name))
+        return result[0]['current_doses'] if result and result[0]['current_doses'] else 0
     
 except odbc.Error as ex:
     print('Connection Failed:', ex)
