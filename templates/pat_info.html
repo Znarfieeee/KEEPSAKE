@@ -1,107 +1,228 @@
 {% extends 'base.html' %}
 {% block content %}
-<div class="information-container">
-    <div class="patient-header">
-        <div class="patient-info">
-            <a href="{{ url_for('index') }}" class="btn btn-link">
-                <img style="height: 25px; width:auto;" src="/static/images/back.png">
-            </a>
-            <h1 style="margin-left: 10px;">{{ patient['PT_FNAME'] }} {{ patient['PT_LNAME'] }}</h1>
-        </div>
-        <div class="action-btn">
-            <button class="edit-btn {{ 'active' if request.endpoint == 'edit_patient' else '' }}" 
-            onclick="editPatient()">EDIT</button>
-            <button class="deactivate-btn {{ 'active' if request.endpoint == 'deactivate_patient' else '' }}"
-            onclick="deactivatePatient()">DEACTIVATE</button>
-        </div>
-    </div>
-
-    <!-- Tabs -->
-    <div class="tabs">
-        <button class="tab-btn {{ 'active' if request.endpoint == 'pat_info' else '' }}" onclick="window.location.href='{{ url_for('pat_info', patient_id=patient['PT_ID']) }}'">INFORMATION</button>
-        <button class="tab-btn {{ 'active' if request.endpoint == 'immunization' else '' }}" onclick="window.location.href='{{ url_for('immunization', patient_id=patient['PT_ID']) }}'">IMMUNIZATION</button>
-        <button class="tab-btn {{ 'active' if request.endpoint == 'presc_info' else '' }}" onclick="window.location.href='{{ url_for('presc_info', patient_id=patient['PT_ID']) }}'">PRESCRIPTION</button>
-    </div>
-
-    <div class="tab-content">
-        <div class="pt-info">
-            <div class="pat-detail-title">PATIENT'S INFORMATION</div>
-            <div class="info-grid">
-                <div>
-                    <div class="label">LAST NAME</div>
-                    <div class="value">{{ patient['PT_LNAME'] }}</div>
-                </div>
-                <div>
-                    <div class="label">FIRST NAME</div>
-                    <div class="value">{{ patient['PT_FNAME'] }}</div>
-                </div>
-                <div>
-                    <div class="label">MIDDLE NAME</div>
-                    <div class="value">{{ patient['PT_MNAME'] }}</div>
-                </div>
-                <div>
-                    <div class="label">AGE</div>
-                    <div class="value">{{ age }}</div>
-                </div>
-                <div>
-                    <div class="label">BIRTHDATE</div>
-                    <div class="value">{{ patient['DT_OF_BIRTH'] }}</div>
-                </div>
+    <div class="information-container">
+        <div class="patient-header">
+            <div class="patient-info">
+                <a href="{{ url_for('index') }}" class="btn btn-link">
+                    <img style="height: 25px; width:auto;" src="/static/images/back.png">
+                </a>
+                <h1 style="margin-left: 10px;">{{ patient['PT_FNAME'] }} {{patient['PT_LNAME']}}</h1>
+            </div>
+            <div class="action-btn">
+                <button class="edit-btn" onclick="editPatient()">EDIT</button>
+                <button class="deactivate-btn" onclick="deactivatePatient('{{ patient.PT_ID }}')">DEACTIVATE</button>
             </div>
         </div>
 
-        <div class="contact-info">
-            <div class="pat-detail-title">CONTACT DETAILS</div>
-            <div class="info-grid">
-                <div>
-                    <div class="label">MOTHER'S NAME</div>
-                    <div class="value">{{ patient['MT_NAME'] }}</div>
-                </div>
-                <div>
-                    <div class="label">FATHER'S NAME</div>
-                    <div class="value">{{ patient['FT_NAME'] }}</div>
-                </div>
-                <div>
-                    <div class="label">CONTACT NUMBER</div>
-                    <div class="value">{{ patient['CON_NUM'] }}</div>
-                </div>
-                <div>
-                    <div class="label">EMAIL</div>
-                    <div class="value">{{ patient['EMAIL_ADD'] }}</div>
+        <div class="tabs">
+            <button id="information" onclick="showInfoTab()">INFORMATION</button>
+            <button id="immunization">IMMUNIZATION</button>
+            <button id="prescription" onclick="redirectToPrescription('{{ patient.PT_ID }}')">PRESCRIPTION</button>
+        </div>
+        
+        <script>
+            function showInfoTab() {
+                // Logic to show Information tab, if needed
+            }
+        
+            function redirectToPrescription(patientId) {
+                // Redirect to prescription page
+                window.location.href = `/prescriptions/${patientId}`;
+            }
+        </script>
+        
+
+        <div class="tab-content">
+            <div class="pt-info">
+                <div class="pat-detail-title">PATIENT'S INFORMATION</div>
+                <div class="info-grid">
+                    <div>
+                        <div class="label">LAST NAME</div>
+                        <div class="value">{{ patient['PT_LNAME'] }}</div>
+                    </div>
+                    <div>
+                        <div class="label">FIRST NAME</div>
+                        <div class="value">{{ patient['PT_FNAME'] }}</div>
+                    </div>
+                    <div>
+                        <div class="label">MIDDLE NAME</div>
+                        <div class="value">{{ patient['PT_MNAME'] }}</div>
+                    </div>
+                    <div>
+                        <div class="label">AGE</div>
+                        <div class="value">{{age}}</div>
+                    </div>
+                    <div>
+                        <div class="label">BIRTHDATE</div>
+                        <div class="value">{{ patient['DT_OF_BIRTH'] }}</div>
+                    </div>
                 </div>
             </div>
-        </div>
-        <div class="screeningtest-info">
-            <div class="pat-detail-title">SCREENING TEST</div>
-            <table class="screening-test-table">
-                <thead>
-                    <tr>
-                        <th>DATE</th>
-                        <th>DESCRIPTION</th>
-                        <th>REMARKS</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td>{{ patient['MT_NAME'] }}</td>
-                        <td>{{ patient['FT_NAME'] }}</td>
-                        <td>{{ patient['CON_NUM'] }}</td>
-                    </tr>
-                </tbody>
-            </table>
+
+            <div class="contact-info">
+                <div class="pat-detail-title">CONTACT DETAILS</div>
+                <div class="info-grid">
+                    <div>
+                        <div class="label">MOTHER'S NAME</div>
+                        <div class="value">{{ patient['MT_NAME'] }}</div>
+                    </div>
+                    <div>
+                        <div class="label">FATHER'S NAME</div>
+                        <div class="value">{{ patient['FT_NAME'] }}</div>
+                    </div>
+                    <div>
+                        <div class="label">CONTACT NUMBER</div>
+                        <div class="value">{{ patient['CON_NUM'] }}</div>
+                    </div>
+                    <div>
+                        <div class="label">EMAIL</div>
+                        <div class="value">{{ patient['EMAIL_ADD'] }}</div>
+                    </div>
+                </div>
+            </div>
+            <div class="screeningtest-info">
+                <div class="pat-detail-title">SCREENING TEST</div>
+                <table class="screening-test-table">
+                    <thead>
+                        <tr>
+                            <th>DATE</th>
+                            <th>DESCRIPTION</th>
+                            <th>REMARKS</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for test in test_data %}
+                            <tr>
+                                <td>{{ test.date or 'N/A' }}</td>
+                                <td>{{ test.description or 'N/A' }}</td>
+                                <td>{{ test.remarks or 'N/A' }}</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                <table class="secondtable">
+                    <thead>
+                        <tr>
+                            <th>DATE</th>
+                            <th>DESCRIPTION</th>
+                            <th>RIGHT</th>
+                            <th>LEFT</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            {% for test in htest %}
+                                <td>{{ test.date or 'N/A' }}</td>
+                                <td>{{ test.description or 'N/A' }}</td>
+                                <td>{{ test.right_ear or 'N/A' }}</td>
+                                <td>{{ test.left_ear or 'N/A' }}</td>
+                            {% endfor %}
+                        </tr>
+                        <tr>
+                            {% for test in ptest %}
+                                <td>{{ test.date or 'N/A' }}</td>
+                                <td>{{ test.description or 'N/A' }}</td>
+                                <td>{{ test.right_hand or 'N/A' }}</td>
+                                <td>{{ test.left_hand or 'N/A' }}</td>
+                            {% endfor %}
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
-</div>
+    <div id="editPatientModal" class="w3-modal">
+        <form action="/editpatient" method="POST" class="w3-modal-content w3-card-4 w3-round-xlarge" style="width: 50%;">
+            <header class="w3-container">
+                <h2>Edit Patient</h2>
+            </header>
+            <div class="w3-container">
+                <input type="hidden" id="pt_id" name="pt_id" value="{{ patient.PT_ID }}">
+                <p>
+                    <label>Last Name</label>
+                    <input class="w3-input" type="text" id="edit_pt_lname" name="pt_lname" value="{{ patient['PT_LNAME'] }}">
+                </p>
+                <p>
+                    <label>First Name</label>
+                    <input class="w3-input" type="text" id="edit_pt_fname" name="pt_fname" value="{{ patient['PT_FNAME'] }}">
+                </p>
+                <p>
+                    <label>Middle Name</label>
+                    <input class="w3-input" type="text" id="edit_pt_mname" name="pt_mname" value="{{ patient['PT_MNAME'] }}">
+                </p>
+                <p>
+                    <label>Birthdate</label>
+                    <input class="w3-input" type="date" id="edit_dt_of_birth" name="dt_of_birth" value="{{ patient['DT_OF_BIRTH'] }}">
+                </p>
+                <p>
+                    <label>Mother's Name</label>
+                    <input class="w3-input" type="text" id="edit_mt_name" name="mt_name" value="{{ patient['MT_NAME'] }}">
+                </p>
+                <p>
+                    <label>Father's Name</label>
+                    <input class="w3-input" type="text" id="edit_ft_name" name="ft_name" value="{{ patient['FT_NAME'] }}">
+                </p>
+                <p>
+                    <label>Contact Number</label>
+                    <input class="w3-input" type="text" id="edit_con_num" name="con_num" value="{{ patient['CON_NUM'] }}">
+                </p>
+                <p>
+                    <label>Email</label>
+                    <input class="w3-input" type="email" id="edit_email_add" name="email_add" value="{{ patient['EMAIL_ADD'] if patient['EMAIL_ADD'] else '' }}">
+                </p>
+                <div class="w3-center ad">
+                    <button type="button" onclick="closemodal()" class="modalcancel">Cancel</button>
+                    <button type="submit" class="modaladd">Save</button>
+                </div>
+            </div>
+        </form>
+    </div>
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            <div class="flash-messages">
+                {% for category, message in messages %}
+                    <div class="flash {{ category }}">
+                        <span>{{ message }}</span>
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+    {% endwith %}
+    <script>
+        function redirectToPrescription(patientId) {
+                window.location.href = `/prescriptions/${patientId}`;
+            }
+        
+        function editPatient() {
 
-<script>
-    function editPatient() {
-        alert('Edit Patient functionality will go here.');
-    }
-
-    function deactivatePatient() {
-        if (confirm('Are you sure you want to deactivate this patient?')) {
-            alert('Patient deactivated successfully.');
+            document.getElementById('editPatientModal').style.display = 'block';
         }
-    }
-</script>
+        function closemodal() {
+            document.getElementById('editPatientModal').style.display = 'none';
+        }
+
+        function deactivatePatient(pt_id) {
+            if (confirm('Are you sure you want to deactivate this patient?')) {
+                fetch('/deactivatepatient', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded'
+                    },
+                    body: `pt_id=${encodeURIComponent(pt_id)}`
+                })
+                .then(response => {
+                    if (response.redirected) {
+                        window.location.href = response.url;
+                    } else {
+                        alert('An error occurred while deactivating the patient.');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('An error occurred while deactivating the patient.');
+                });
+            }
+        }
+
+    </script>
 {% endblock %}

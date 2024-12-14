@@ -328,7 +328,7 @@ body {
   background-color: #8f2929; /* Darker red */
 }
 
-.action-btn button {
+.action-btn button, .np-btn {
   padding: 10px 20px;
   font-size: 16px;
   border: none;
@@ -370,7 +370,7 @@ body {
 }
 
 .tabs button {
-  background-color: #d6f5d6; /* Light green */
+  background-color: #d6f5d6; 
   border: 1px solid #ccc;
   padding: 10px 20px;
   font-size: 14px;
@@ -378,17 +378,18 @@ body {
   font-weight: bold;
   cursor: pointer;
   border-radius: 5px 5px 0 0;
+  transition: 0.2s ease-in-out;
 }
 
 .tabs button.active {
   pointer-events: none;
   background-color: white;
   cursor: default;
-  border-bottom: 2px solid white; /* Seamless with content area */
+  border-bottom: 2px solid white;
 }
 
 .tabs button:hover {
-  background-color: #b9e3b9; /* Slightly darker green */
+  background-color: #b9e3b9; 
 }
 
 /* Content Box */
@@ -399,6 +400,7 @@ body {
   border: 1px solid #ccc;
   border-radius: 0 0 10px 10px;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  min-height: 500px;
 }
 
 /* Section Titles */
@@ -473,22 +475,33 @@ label {
   display: inline-block;
 }
 
-.patientinfoinput, .containtinfoinput, .aminfoinput {
+.patientinfoinput, .containtinfoinput, .stinfoinput {
   display: flex;
+  flex-direction: column;
   gap: 15px;
 }
 
-.patientinfoinput .firstcol,
-.patientinfoinput .secondcol,
-.containtinfoinput .firstcol,
-.containtinfoinput .secondcol,
-.aminfoinput .firstcol,
-.aminfoinput .secondcol {
+.patientinfoinput .firstrow,
+.patientinfoinput .secondrow,
+.containtinfoinput .firstrow,
+.containtinfoinput .secondrow,
+.aminfoinput .firstrow,
+.aminfoinput .secondrow {
   flex: 1;
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   gap: 10px;
 }
+
+.stinfoinput .firstrowinput,
+.stinfoinput .secondrowinput,
+.stinfoinput .thirdrowinput,
+.stinfoinput .fourthrowinput {
+  flex: 1;
+  display: flex;
+  gap: 10px;
+}
+
 
 /* Inputs */
 .addpt input.w3-input {
@@ -561,157 +574,434 @@ label {
   align-items: auto;
 }
 
-/* DIRI KO SUGOD NAG PUNO FRANZ */
+/* Style For Flash Messages */
+.flash-messages {
+  position: fixed;
+  top: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 9999;
+  width: 50%;
+  color: white;
+  padding: 20px;
+}
 
-/* Style for the Screening Test table */
+.flash {
+  margin-bottom: 15px;
+  padding: 10px;
+  border-radius: 5px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.flash button {
+  background-color: transparent;
+  border: none;
+  color: white;
+  font-weight: bold;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.flash button:hover {
+  text-decoration: underline;
+}
+
+.flash.success {
+  background-color: rgba(40, 167, 69, 0.8);
+}
+
+.flash.error {
+  background-color: rgba(220, 53, 69, 0.8);
+}
+
+.switch {
+  position: relative;
+  display: inline-block;
+  width: 34px;
+  height: 20px;
+}
+
+.switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #ccc;
+  transition: 0.4s;
+  border-radius: 20px;
+}
+
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 12px;
+  width: 12px;
+  left: 4px;
+  bottom: 4px;
+  background-color: white;
+  transition: 0.4s;
+  border-radius: 50%;
+}
+
+input:checked + .slider {
+  background-color: #d6f5d6;
+}
+
+input:checked + .slider:before {
+  transform: translateX(14px);
+}
+
 .screening-test-table {
-  width: 75%; /* Sets table width to 75% of the parent container */
-  margin: 20px auto; /* Centers the table horizontally and adds top/bottom margins */
-  border-collapse: collapse; /* Collapses the table borders into a single border */
+  width: 75%;
+  margin: 20px auto;
+  border-collapse: collapse; 
 }
 
 .screening-test-table th,
 .screening-test-table td {
-  padding: 8px; /* Adds padding to the cells */
-  border: 1px solid #ccc; /* Light border around cells */
-  text-align: center; /* Centers text horizontally */
-  vertical-align: middle; /* Centers text vertically */
+  padding: 8px; 
+  border: 1px solid #ccc; 
+  text-align: center; 
+  vertical-align: middle; 
 }
 
 .screening-test-table th {
-  background-color: transparent; /* Light green background for header cells */
-  color: #333; /* Dark text color for contrast */
-  font-weight: bold; /* Makes header text bold */
+  background-color: transparent; 
+  color: #333; 
+  font-weight: bold; 
+  width: 100%;
 }
 
 .screening-test-table tr:nth-child(even) {
-  background-color: transparent; /* Light background for alternate rows */
+  background-color: transparent;
 }
 
 .screening-test-table tr:hover {
-  background-color: transparent; /* Subtle green highlight on hover */
+  background-color: transparent;
 }
 
 .screening-test-table td {
-  color: #333; /* Default text color */
+  color: #333; 
 }
 
 .screening-test-table th:first-child {
-  width: 15%; /* Sets a smaller width for the first column (DATE) */
+  width: 15%;
 }
 
 .screening-test-table th:nth-child(2) {
-  width: 50%; /* Sets a larger width for the second column (DESCRIPTION) */
+  width: 65%; 
 }
 
 .screening-test-table th:nth-child(3) {
-  width: 30%; /* Sets a medium width for the third column (REMARKS) */
+  width: 40%; 
 }
-/* Patient Header */
-.patient-header {
-  display: flex;
+
+/* SECOND TABLE */
+.secondtable {
+  width: 75%; 
+  margin: 20px auto;
+  border-collapse: collapse; 
+}
+
+.secondtable th,
+.secondtable td {
+  padding: 8px; 
+  border: 1px solid #ccc; 
+  text-align: center; 
+  vertical-align: middle; 
+}
+
+.secondtable th {
+  background-color: transparent; 
+  color: #333; 
+  font-weight: bold; 
+}
+
+.secondtable tr:nth-child(even) {
+  background-color: transparent;
+}
+
+.secondtable tr:hover {
+  background-color: transparent;
+}
+
+.secondtable td {
+  color: #333; 
+}
+
+.secondtable th:first-child {
+  width: 13%;
+}
+
+.secondtable th:nth-child(2) {
+  width: 50%; 
+}
+
+.secondtable th:nth-child(3) {
+  width: 8%; 
+}
+
+.secondtable th:nth-child(4) {
+  width: 8%; 
+}
+
+/* Styles For Prescription Page */
+.presciption-table {
+  width: 75%; 
+  margin: 50px auto;
+  border-collapse: collapse; 
+}
+
+.presciption-table th,
+.presciption-table td {
+  padding: 16px; 
+  border: 1px solid #ccc; 
+  text-align: center; 
+  vertical-align: middle; 
+}
+
+.presciption-table th {
+  background-color: transparent; 
+  color: #333; 
+  font-weight: bold; 
+}
+
+.presciption-table tr:nth-child(even) {
+  background-color: transparent;
+}
+
+.presciption-table tr:hover {
+  background-color: transparent;
+}
+
+.presciption-table td {
+  color: #333; 
+}
+
+.prescription-table td:first-child {
+  width: 30%; 
+}
+
+.prescription-table td:last-child {
+  width: 70%; 
+}
+
+/* Modal Style */
+#prescriptionModal {
+  display: none;
+  position: fixed;
+  z-index: 10;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  justify-content: center;
   align-items: center;
+  
+}
+
+#mod-cont {
+  background-image: url('/static/images/Rx-Icon.JPG');
+  background-repeat: no-repeat;
+  background-position: 550px 570px;
+  background-size: 100px 100px;
+
+  /* background: #fff; */
+  border-radius: 8px;
+  padding: 20px 40px;
+  max-width: 700px;
+  width: 90%;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+  position: relative;
+}
+
+.section {
   margin-bottom: 20px;
 }
-.back-icon {
-  height: 25px;
-  width: auto;
-  margin-right: 10px;
-}
-.patient-name {
-  font-size: 24px;
+
+.section-title {
   font-weight: bold;
-}
-
-/* Tabs */
-.tabs {
-  display: flex;
-  border-bottom: 2px solid #ccc;
-  margin-bottom: 20px;
-}
-.tab-link {
-  text-decoration: none;
-  padding: 10px 20px;
+  margin-bottom: 10px;
+  display: block;
+  font-size: 16px;
   color: #333;
-  border: 1px solid transparent;
-  border-bottom: 2px solid transparent;
-  margin-right: 10px;
-}
-.tab-link.active {
-  color: #fff;
-  background-color: #4CAF50;
-  border-color: #4CAF50;
 }
 
-/* Prescription Section */
-.prescription-section {
-  background: #f9f9f9;
-  padding: 20px;
-  border-radius: 10px;
+/* Input Grid */
+.input-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px 20px;
 }
-.prescription-header {
+
+.input {
+  padding: 8px 10px;
+  font-size: 14px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+
+.instruction-box {
+  width: 100%;
+  height: 120px;
+  resize: none;
+  padding: 10px;
+}
+
+/* Save Button */
+.actions {
   display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 20px;
+  justify-content: flex-end;
 }
-.prescription-icon {
-  height: 50px;
-  width: auto;
-}
-.new-prescription-btn {
+
+.save-btn {
+  padding: 10px 20px;
+  font-size: 16px;
   background-color: #4CAF50;
   color: white;
   border: none;
-  padding: 10px 20px;
   border-radius: 5px;
   cursor: pointer;
 }
-.new-prescription-btn {
-  background-color: #007965; /* Matches the edit button */
-  color: white;
-  padding: 10px 20px;
+
+.save-btn:hover {
+  background-color: #45a049;
+}
+/* Toggle Section */
+.toggle-section {
+  display: flex;
+  align-items: center;
+  margin-bottom: 15px;
+}
+
+.toggle-section label {
   font-size: 14px;
-  font-weight: bold;
-  border: none;
-  border-radius: 20px; /* Matches the rounded corners of the edit button */
-  cursor: pointer;
-  transition: all 0.3s ease-in-out; /* Smooth transition */
+  margin-right: 10px;
 }
 
-.new-prescription-btn:hover {
-  background-color: #005F4A; /* Matches the edit button hover state */
+/* Toggle Switch */
+.switch {
+  position: relative;
+  display: inline-block;
+  width: 40px;
+  height: 20px;
 }
 
+.switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
 
-/* Prescription Table */
-.prescription-table {
+/* New Prescription Button */
+.np-btn {
+  background-color: #d6f5d6;
+  width: auto;
+  font-weight: regular;
+  font-size: 14px;
+  color: #026b3f;
+  margin-left: 960px;
+  max-width: fit-content;
+  max-height: 40px;
+}
+
+.np-btn:hover {
+  background-color: #b9e3b9;
+}
+.modal {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 80%;
+  max-width: 500px;
+  height: auto;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: rgba(0, 0, 0, 0.5);  /* Darkened background */
+  z-index: 1000;
+}
+
+.modal-content {
+  background: white;
+  padding: 20px;
+  border-radius: 5px;
   width: 100%;
-  border-collapse: collapse;
-  margin-top: 10px;
-}
-.prescription-table th,
-.prescription-table td {
-  text-align: left;
-  padding: 12px;
-  border-bottom: 1px solid #ddd;
-}
-.prescription-table tr:hover {
-  background-color: #f1f1f1;
-}
-:root {
-  --primary-green: #4CAF50;
-  --secondary-green: #7ac77e;
-  --hover-green: #45a049;
-  --gray: #f5f5f5;
-}
-@media (max-width: 768px) {
-  .modal-content {
-      width: 90%;
-  }
-}
-button:focus, a:focus {
-  outline: 2px solid #4CAF50;
 }
 
+.close-btn {
+  background: #f44336;
+  color: white;
+  padding: 10px 15px;
+  border: none;
+  cursor: pointer;
+  border-radius: 5px;
+  float: right;
+}
 
+.modal-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: transparent;
+}
+.modal-container {
+  background-color: white;
+  border-radius: 8px;
+  max-width: 600px;
+  margin: auto;
+  font-family: Arial, sans-serif;
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 20px;
+}
+
+.back-btn,
+.print-btn {
+  background: none;
+  border: none;
+  color: #007BFF;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+.section {
+  margin: 20px 0;
+}
+
+.section-title {
+  font-size: 18px;
+  margin-bottom: 10px;
+  color: #333;
+}
+
+.row {
+  display: flex;
+  justify-content: space-between;
+  padding: 5px 0;
+}
+
+.instruction-box {
+  border: 1px solid #ccc;
+  padding: 10px;
+  border-radius: 4px;
+  background-color: #f9f9f9;
+}
