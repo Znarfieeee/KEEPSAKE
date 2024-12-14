@@ -1005,3 +1005,53 @@ input:checked + .slider:before {
   border-radius: 4px;
   background-color: #f9f9f9;
 }
+
+/* Sidebar */
+.sidebar {
+  height: 100%;
+  width: 0;
+  position: fixed;
+  top: 0;
+  left: 0;
+  background-color: #111;
+  overflow-x: hidden;
+  transition: 0.5s;
+  padding-top: 60px;
+}
+
+.sidebar a {
+  padding: 10px 15px;
+  text-decoration: none;
+  font-size: 18px;
+  color: white;
+  display: flex;
+  align-items: center;
+  transition: 0.3s;
+}
+
+.sidebar a:hover {
+  color: #f1f1f1;
+}
+
+.sidebar img {
+  width: 24px;
+  margin-right: 10px;
+}
+
+.closebtn {
+  position: absolute;
+  top: 0;
+  right: 25px;
+  font-size: 36px;
+  margin-left: 50px;
+}
+
+/* Hamburger Icon */
+.hamburger {
+  font-size: 30px;
+  cursor: pointer;
+  position: absolute;
+  top: 15px;
+  left: 20px;
+  z-index: 10;
+}

@@ -207,7 +207,6 @@ def pat_info(patient_id):
         today = datetime.today()
         age_years = today.year - dob.year - ((today.month, today.day) < (dob.month, dob.day))
         if age_years == 0:
-            # If age is 0 years, calculate the months
             age_months = (today.year - dob.year) * 12 + today.month - dob.month - (today.day < dob.day)
             age = f"{age_months} months"
         else:
@@ -279,9 +278,9 @@ def login():
         user = getallprocess(sql, (empid, password))
         
         if user:
-            print(user)
             session['logged_in'] = True
             session['user'] = user[0]
+            session['user_type'] = user[0].get('USER_TYPE')  # Add USER_TYPE to session
             
             session['dr_name'] = user[0].get('DR_NAME', '').upper()
             session['spclty'] = user[0].get('SPLTY', '').upper()
