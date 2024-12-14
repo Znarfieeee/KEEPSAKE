@@ -13,55 +13,22 @@
 </head>
 <body>
     <div class="main-container">
-        <div class="w3-container w3-padding w3-white hdr">
+        <div class=" w3-container w3-padding w3-white hdr">
             <div class="box" id="box">
-                {% if session['user_type'] == 0 %}
-                <span class="hamburger" onclick="toggleNav()">&#9776;</span>
-                {% endif %}
                 <a href="/"><img class="ks-logo" src="/static/images/2.png" alt="LOGO"></a>
                 <div class="right-box">
                     <div class="accnt w3-container">
                         <img class="account-icon" src="/static/images/account-logo.png" onclick="acc()">
                         <div id="account-container">
-                            {% if session['user_type'] == 1 %}
-                                <!-- Display Doctor's Information -->
-                                <p>
-                                    <h3>
-                                        <span id="dr_name" style="text-transform: uppercase;">{{ dr_name }}</span>
-                                    </h3>
-                                </p>
-                                <p>
-                                    <h5>
-                                        <span id="spclty" style="text-transform: uppercase;">{{ spclty }}</span>
-                                    </h5>
-                                </p>
-                            {% else %}
-                                <p>
-                                    <h3>
-                                        <span id="staff_name" style="text-transform: uppercase;">{{ staff_name }}</span>
-                                    </h3>
-                                </p>
-                                <p>
-                                    <h5>
-                                        <span id="staff_role">STAFF</span>
-                                    </h5>
-                                </p>
-                            {% endif %}
+                            <p><h3><span id="dr_name" style="text-transform: uppercase;">{{ dr_name }}</span></h3></p>
+                            <p><h5><span id="spclty" style="text-transform: uppercase;">{{ spclty }}</span></h5></p>
                             <hr>
                             <div class="logout">
-                                <a href="{{ url_for('logout') }}">
-                                    <img class="logout-icon" src="/static/images/log-out.png"> LOGOUT
-                                </a>
+                                <a href="{{ url_for('logout')}}"><img class="logout-icon" src="/static/images/log-out.png"> LOGOUT</a>
                             </div>
                         </div>
                     </div>
                 </div>
-            </div>
-        </div>
-        <div id="mySidebar" class="sidebar">
-            <div class="nav">
-                <a href="/"><img src="/static/images/patientrecord.png"> Patient Record</a>
-                <a href="{{ url_for('patients_tab') }}"><img src="/static/images/reports.png"> Reports</a>
             </div>
         </div>
         <div class="w3-container w3-padding">
@@ -86,16 +53,10 @@
             } 
     }
 
-    function toggleNav() {
-    var sidebar = document.getElementById("mySidebar");
-    if (sidebar.style.width === "250px") {
-        // Sidebar is open, close it
-        sidebar.style.width = "0";
-    } else {
-        // Sidebar is closed, open it
-        sidebar.style.width = "250px";
+    function dr_name(){
+        
     }
-}
+    
 
 </script>
 </html>

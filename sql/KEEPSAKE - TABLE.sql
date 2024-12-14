@@ -136,9 +136,23 @@ ON PATIENT_INFORMATION
 AFTER UPDATE
 AS
 BEGIN
+    -- Debug print to see what's in INSERTED table
+    DECLARE @Debug TABLE (PT_ID INT, ISACTIVE BIT);
+    INSERT INTO @Debug
+    SELECT PT_ID, ISACTIVE FROM INSERTED;
+    
+    -- Log all updates with explicit CAST to ensure proper comparison
     INSERT INTO TRANSACTION_LOG (PT_ID, OPERATION, MODIFIED_DATE)
-    SELECT PT_ID, 'UPDATE', GETDATE()
+    SELECT PT_ID, 
+           CASE 
+               WHEN CAST(ISACTIVE AS BIT) = 0 THEN 'DEACTIVATED'
+               ELSE 'UPDATE'
+           END AS OPERATION,
+           GETDATE()
     FROM INSERTED;
+
+    -- Print debug info
+    SELECT * FROM @Debug;
 END;
 GO
 
