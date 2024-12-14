@@ -20,7 +20,13 @@
                     {% for patient in patients %}
                         <tr onclick="patientinfo('{{ patient.PT_ID }}')">
                             <td>{{ patient['PT_ID'] }}</td>
-                            <td>{{ patient['PT_FULLNAME'].upper() }}</td>
+                            <td>
+                                {{ patient['PT_FNAME'] }}
+                                {% if patient['PT_MNAME'] and patient['PT_MNAME']|lower != 'none' %}
+                                    {{ patient['PT_MNAME'] }}
+                                {% endif %}
+                                {{ patient['PT_LNAME'] }}
+                            </td>
                             <td>{{ patient['DT_OF_BIRTH'] }}</td>
                         </tr>
                     {% endfor %}
