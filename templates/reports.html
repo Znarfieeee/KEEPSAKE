@@ -1,0 +1,2354 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="reports-container">
+    <div class="reports-header">
+        <h1>Reports</h1>
+    </div>
+
+    <!-- Tabs -->
+    <div class="tabs">
+        <button class="tab-btn active" onclick="showTab('all-patients')">ALL PATIENTS</button>
+        <button class="tab-btn" onclick="showTab('patients')">PATIENTS</button>
+        <button class="tab-btn" onclick="showTab('new-patients')">NEW PATIENTS</button>
+    </div>
+
+    <div class="tab-content">
+        <!-- All Patients tab content -->
+        <div id="all-patients-tab" class="tab-pane active">
+            <div class="all-patients-container">
+                <div class="filter-section">
+                    <select id="filterType" onchange="updateDateFilter()">
+                        <option value="all">All Records</option>
+                        <option value="day">By Day</option>
+                        <option value="month">By Month</option>
+                        <option value="year">By Year</option>
+                    </select>
+                    
+                    <!-- Date filters - initially hidden -->
+                    <input type="date" id="dayFilter" style="display: none;" onchange="filterAllPatients()">
+                    
+                    <select id="monthFilter" style="display: none;" onchange="filterAllPatients()">
+                        <option value="">Select Month</option>
+                        <option value="01">January</option>
+                        <option value="02">February</option>
+                        <option value="03">March</option>
+                        <option value="04">April</option>
+                        <option value="05">May</option>
+                        <option value="06">June</option>
+                        <option value="07">July</option>
+                        <option value="08">August</option>
+                        <option value="09">September</option>
+                        <option value="10">October</option>
+                        <option value="11">November</option>
+                        <option value="12">December</option>
+                    </select>
+                    
+                    <select id="yearFilter" style="display: none;" onchange="filterAllPatients()">
+                        <option value="">Select Year</option>
+                        {% for year in range(2020, 2025) %}
+                            <option value="{{ year }}">{{ year }}</option>
+                        {% endfor %}
+                    </select>
+                    
+                    <input type="text" id="allPatientsSearch" placeholder="Search patient..." oninput="filterAllPatients()">
+                    <button onclick="showChartModal('all')" class="view-btn">
+                        <i class="fas fa-chart-pie"></i> View Record
+                    </button>
+                </div>
+
+                <div class="excel-style-table">
+                    <table class="records-table" id="allPatientsTable">
+                        <thead>
+                            <tr class="table-header">
+                                <th colspan="5" class="clinic-header">KEEPSAKE CLINIC</th>
+                            </tr>
+                            <tr class="table-header">
+                                <th colspan="5" class="record-title">All Patient Records</th>
+                            </tr>
+                            <tr class="column-headers">
+                                <th>No.</th>
+                                <th>Patient ID</th>
+                                <th>Patient Name</th>
+                                <th>Operation</th>
+                                <th>Modified Date</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for record in all_patients %}
+                            <tr class="clickable-row" onclick="showPatientDetails('{{ record.PT_ID }}', '{{ record.PT_FNAME }} {{ record.PT_LNAME }}')">
+                                <td class="text-center">{{ loop.index }}</td>
+                                <td>{{ record.PT_ID }}</td>
+                                <td>{{ record.PT_FNAME }} {{ record.PT_LNAME }}</td>
+                                <td>{{ record.OPERATION }}</td>
+                                <td>{{ record.MODIFIED_DATE.strftime('%Y-%m-%d %H:%M:%S') if record.MODIFIED_DATE else '' }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Patients tab content -->
+        <div id="patients-tab" class="tab-pane">
+            <div class="patients-container">
+                <div class="filter-section">
+                    <select id="patientsFilterType" onchange="updatePatientsDateFilter()">
+                        <option value="all">All Records</option>
+                        <option value="day">By Day</option>
+                        <option value="month">By Month</option>
+                        <option value="year">By Year</option>
+                    </select>
+                    
+                    <!-- Date filters - initially hidden -->
+                    <input type="date" id="patientsDateFilter" style="display: none;" onchange="filterPatients()">
+                    
+                    <select id="patientsMonthFilter" style="display: none;" onchange="filterPatients()">
+                        <option value="">Select Month</option>
+                        <option value="01">January</option>
+                        <option value="02">February</option>
+                        <option value="03">March</option>
+                        <option value="04">April</option>
+                        <option value="05">May</option>
+                        <option value="06">June</option>
+                        <option value="07">July</option>
+                        <option value="08">August</option>
+                        <option value="09">September</option>
+                        <option value="10">October</option>
+                        <option value="11">November</option>
+                        <option value="12">December</option>
+                    </select>
+                    
+                    <select id="patientsYearFilter" style="display: none;" onchange="filterPatients()">
+                        <option value="">Select Year</option>
+                        {% for year in range(2020, 2025) %}
+                            <option value="{{ year }}">{{ year }}</option>
+                        {% endfor %}
+                    </select>
+                    
+                    <input type="text" id="patientsSearch" placeholder="Search patient..." oninput="filterPatients()">
+                    <button onclick="showChartModal('patients')" class="view-btn">
+                        <i class="fas fa-chart-pie"></i> View Record
+                    </button>
+                </div>
+
+                <div class="excel-style-table">
+                    <table class="records-table" id="patientsTable">
+                        <thead>
+                            <tr class="table-header">
+                                <th colspan="5" class="clinic-header">KEEPSAKE CLINIC</th>
+                            </tr>
+                            <tr class="table-header">
+                                <th colspan="5" class="record-title">Patient Records</th>
+                            </tr>
+                            <tr class="column-headers">
+                                <th>No.</th>
+                                <th>Patient ID</th>
+                                <th>Patient Name</th>
+                                <th>Operation</th>
+                                <th>Modified Date</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% if patients %}
+                                {% for record in patients %}
+                                    <tr class="clickable-row" onclick="showPatientDetails('{{ record.PT_ID }}', '{{ record.PT_FNAME }} {{ record.PT_LNAME }}')">
+                                        <td class="text-center">{{ loop.index }}</td>
+                                        <td>{{ record.PT_ID }}</td>
+                                        <td>{{ record.PT_FNAME }} {{ record.PT_LNAME }}</td>
+                                        <td>{{ record.OPERATION }}</td>
+                                        <td>{{ record.MODIFIED_DATE.strftime('%Y-%m-%d %H:%M:%S') if record.MODIFIED_DATE else '' }}</td>
+                                    </tr>
+                                {% endfor %}
+                            {% else %}
+                                <tr>
+                                    <td colspan="5" class="text-center">No records found</td>
+                                </tr>
+                            {% endif %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- New Patients tab content -->
+        <div id="new-patients-tab" class="tab-pane">
+            <div class="new-patients-container">
+                <div class="filter-section">
+                    <input type="text" id="newPatientsSearch" placeholder="Search new patient..." oninput="filterNewPatients()">
+                    <button onclick="showChartModal('new')" class="view-btn">
+                        <i class="fas fa-chart-pie"></i> View Record
+                    </button>
+                </div>
+
+                <div class="excel-style-table">
+                    <table class="records-table" id="newPatientsTable">
+                        <thead>
+                            <tr class="table-header">
+                                <th colspan="5" class="clinic-header">KEEPSAKE CLINIC</th>
+                            </tr>
+                            <tr class="table-header">
+                                <th colspan="5" class="record-title">New Patient Records (Last 30 Days)</th>
+                            </tr>
+                            <tr class="column-headers">
+                                <th>No.</th>
+                                <th>Patient ID</th>
+                                <th>Patient Name</th>
+                                <th>Operation</th>
+                                <th>Registration Date</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% if new_patients %}
+                                {% for record in new_patients %}
+                                <tr class="clickable-row" onclick="showPatientDetails('{{ record.PT_ID }}', '{{ record.PT_FNAME }} {{ record.PT_LNAME }}')">
+                                    <td class="text-center">{{ loop.index }}</td>
+                                    <td>{{ record.PT_ID }}</td>
+                                    <td>{{ record.PT_FNAME }} {{ record.PT_LNAME }}</td>
+                                    <td>{{ record.OPERATION }}</td>
+                                    <td>{{ record.MODIFIED_DATE.strftime('%Y-%m-%d %H:%M:%S') if record.MODIFIED_DATE else '' }}</td>
+                                </tr>
+                                {% endfor %}
+                            {% else %}
+                                <tr>
+                                    <td colspan="5" class="text-center">No new patients found</td>
+                                </tr>
+                            {% endif %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="allPatientModal" class="w3-modal">
+    <div class="w3-modal-content w3-card-4 w3-animate-zoom" style="max-width:900px">
+        <header class="w3-container" style="background-color: #1f4172; color: white;">
+            <span onclick="document.getElementById('allPatientModal').style.display='none'" 
+                  class="w3-button w3-display-topright">&times;</span>
+            <div class="modal-header-content">
+                <div class="patient-info-header">
+                    <h3 id="modalPatientName" style="margin: 0;"></h3>
+                    <span id="modalPatientId" class="patient-id-badge"></span>
+                </div>
+            </div>
+        </header>
+
+        <div class="w3-container">
+            <div class="excel-style-table">
+                <table class="records-table" id="patientOperationsTable">
+                    <thead>
+                        <tr class="table-header">
+                            <th colspan="4" class="clinic-header">KEEPSAKE CLINIC</th>
+                        </tr>
+                        <tr class="table-header">
+                            <th colspan="4" class="record-title">Patient Operations History</th>
+                        </tr>
+                        <tr class="patient-details-row">
+                            <th colspan="2">Patient Name:</th>
+                            <td colspan="2" id="detailsPatientName"></td>
+                        </tr>
+                        <tr class="section-header">
+                            <th colspan="4" class="record-subtitle">Operations History</th>
+                        </tr>
+                        <tr class="column-headers">
+                            <th>No.</th>
+                            <th>Operation</th>
+                            <th>Date</th>
+                            <th>Time</th>
+                        </tr>
+                    </thead>
+                    <tbody id="operationsHistoryBody">
+                        <!-- Will be populated by JavaScript -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Chart Modal -->
+<div id="chartModal" class="w3-modal">
+    <div class="w3-modal-content w3-card-4 w3-animate-zoom" style="max-width:1000px">
+        <header class="w3-container" style="background-color: #1f4172; color: white;">
+            <span onclick="closeChartModal()" class="w3-button w3-display-topright">&times;</span>
+            <h3 id="chartTitle" style="margin: 10px 0;">Patient Records Analysis</h3>
+        </header>
+
+        <div class="w3-container">
+            <div class="chart-container">
+                <div class="chart-row">
+                    <div class="chart-col">
+                        <canvas id="operationsChart"></canvas>
+                    </div>
+                    <div class="chart-col">
+                        <div class="stats-summary">
+                            <h4>Summary</h4>
+                            <div id="statsContent"></div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="table-container" style="width: 100%;">
+                    <table class="records-table" id="chartTableDetails">
+                        <thead>
+                            <tr class="table-header">
+                                <th colspan="5" class="clinic-header">KEEPSAKE CLINIC</th>
+                            </tr>
+                            <tr class="table-header">
+                                <th colspan="5" class="record-title">Detailed Records</th>
+                            </tr>
+                            <tr class="column-headers">
+                                <th>No.</th>
+                                <th>Patient ID</th>
+                                <th>Patient Name</th>
+                                <th>Operation</th>
+                                <th>Modified Date</th>
+                            </tr>
+                        </thead>
+                        <tbody id="chartTableBody">
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Export Buttons -->
+                <div class="export-buttons">
+                    <button onclick="exportChartToPDF()" class="export-btn pdf-btn">
+                        <i class="fas fa-file-pdf"></i> Export to PDF
+                    </button>
+                    <button onclick="exportChartToExcel()" class="export-btn excel-btn">
+                        <i class="fas fa-file-excel"></i> Export to Excel
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.tabs {
+    display: flex;
+    gap: 20px;
+    margin-bottom: 20px;
+    border-bottom: 1px solid #ddd;
+    padding-bottom: 10px;
+}
+
+.tab-btn {
+    background: none;
+    border: none;
+    padding: 10px 20px;
+    cursor: pointer;
+    font-size: 1em;
+    color: #666;
+    position: relative;
+}
+
+.tab-btn.active {
+    color: #1f4172;
+    font-weight: bold;
+}
+
+.tab-btn.active::after {
+    content: '';
+    position: absolute;
+    bottom: -11px;
+    left: 0;
+    width: 100%;
+    height: 2px;
+    background-color: #1f4172;
+}
+
+.tab-pane {
+    display: none;
+    padding: 20px 0;
+}
+
+.tab-pane.active {
+    display: block;
+}
+
+.reports-container {
+    padding: 20px;
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.reports-header {
+    margin-bottom: 20px;
+}
+
+.reports-header h1 {
+    color: #1f4172;
+    margin: 0;
+}
+
+.filter-section {
+    display: flex;
+    gap: 15px;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+    align-items: center;
+}
+
+.filter-section select,
+.filter-section input {
+    padding: 8px 12px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    font-size: 0.95em;
+}
+
+.filter-section input[type="text"] {
+    flex: 1;
+    min-width: 200px;
+}
+
+.filter-section select {
+    min-width: 120px;
+}
+
+.filter-section input[type="date"] {
+    min-width: 150px;
+}
+
+.detail-card {
+    background: white;
+    border-radius: 8px;
+    padding: 20px;
+    margin-bottom: 20px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.patient-info {
+    margin-bottom: 15px;
+}
+
+.info-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.info-header h3 {
+    margin: 0;
+    color: #1f4172;
+    font-size: 1.2em;
+}
+
+.date {
+    color: #666;
+    font-size: 0.9em;
+}
+
+.info-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 15px;
+}
+
+.info-item {
+    display: flex;
+    gap: 10px;
+}
+
+.info-item .label {
+    color: #666;
+    font-weight: 500;
+}
+
+.info-item .value {
+    color: #333;
+}
+
+.checkup-details {
+    border-top: 1px solid #eee;
+    padding-top: 15px;
+}
+
+.checkup-details h4 {
+    color: #1f4172;
+    margin: 0 0 10px 0;
+    font-size: 1em;
+}
+
+.findings, .consultation {
+    margin-bottom: 15px;
+}
+
+.findings p, .consultation p {
+    margin: 0;
+    color: #333;
+    line-height: 1.5;
+}
+
+.filter-section input {
+    flex: 1;
+    min-width: 200px;
+}
+
+.filter-section select {
+    width: auto;
+    min-width: 150px;
+}
+
+.details-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+    background: white;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    border-radius: 8px;
+}
+
+.details-table th {
+    background-color: #1f4172;
+    color: white;
+    padding: 12px;
+    text-align: left;
+}
+
+.details-table td {
+    padding: 12px;
+    border-bottom: 1px solid #eee;
+}
+
+.details-table tr:hover {
+    background-color: #f5f5f5;
+}
+
+.view-findings-btn {
+    background-color: #1f4172;
+    color: white;
+    border: none;
+    padding: 6px 12px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.9em;
+}
+
+.view-findings-btn:hover {
+    background-color: #2a5498;
+}
+
+.findings-content {
+    background-color: #f9f9f9;
+    padding: 15px;
+    margin-top: 10px;
+    border-radius: 4px;
+    border: 1px solid #eee;
+}
+
+.findings-content h4 {
+    color: #1f4172;
+    margin: 0 0 8px 0;
+    font-size: 0.9em;
+}
+
+.findings-content p {
+    margin: 0 0 15px 0;
+    color: #333;
+    font-size: 0.9em;
+    line-height: 1.5;
+}
+
+.details-table th:first-child,
+.details-table td:first-child {
+    border-top-left-radius: 8px;
+}
+
+.details-table th:last-child,
+.details-table td:last-child {
+    border-top-right-radius: 8px;
+}
+
+.filter-section {
+    margin-bottom: 20px;
+    display: flex;
+    gap: 10px;
+}
+
+.filter-section input {
+    flex: 1;
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
+.filter-section select {
+    min-width: 150px;
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
+.patients-grid {
+    display: grid;
+    gap: 20px;
+    margin-top: 20px;
+}
+
+.patient-card {
+    background: white;
+    border-radius: 8px;
+    padding: 20px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.patient-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 15px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #eee;
+}
+
+.patient-main-info h3 {
+    margin: 0;
+    color: #1f4172;
+    font-size: 1.2em;
+}
+
+.patient-id {
+    color: #666;
+    font-size: 0.9em;
+}
+
+.patient-age-info {
+    text-align: right;
+}
+
+.birthdate {
+    color: #666;
+    font-size: 0.9em;
+}
+
+.patient-details {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 15px;
+    margin-bottom: 15px;
+}
+
+.detail-row {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.detail-label {
+    color: #666;
+    font-size: 0.9em;
+    font-weight: 500;
+}
+
+.detail-value {
+    color: #333;
+}
+
+.patient-records {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-top: 15px;
+    border-top: 1px solid #eee;
+}
+
+.records-summary {
+    display: flex;
+    gap: 20px;
+}
+
+.record-count {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: #666;
+}
+
+.record-count i {
+    color: #1f4172;
+}
+
+.view-details-btn {
+    background-color: #1f4172;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.9em;
+    transition: background-color 0.3s;
+}
+
+.view-details-btn:hover {
+    background-color: #2a5498;
+}
+
+.patient-basic-info {
+    padding: 20px;
+    background-color: #f9f9f9;
+    border-radius: 4px;
+    margin: 20px 0;
+}
+
+.info-row {
+    display: flex;
+    margin-bottom: 10px;
+}
+
+.info-label {
+    font-weight: 500;
+    width: 100px;
+    color: #1f4172;
+}
+
+.info-value {
+    color: #333;
+}
+
+.checkup-records {
+    margin: 20px 0;
+}
+
+.checkup-records h4 {
+    color: #1f4172;
+    margin-bottom: 15px;
+}
+
+.table-container {
+    overflow-x: auto;
+}
+
+.table-container table {
+    width: 100%;
+    border-collapse: collapse;
+    table-layout: fixed;
+}
+
+.table-container th, 
+.table-container td {
+    padding: 12px 15px;
+    text-align: left;
+    border-bottom: 1px solid #eee;
+    word-wrap: break-word;
+}
+
+.table-container th {
+    background-color: #1f4172;
+    color: white;
+    font-weight: 500;
+}
+
+.table-container td {
+    vertical-align: top;
+}
+
+.table-container tr:hover {
+    background-color: #f5f5f5;
+}
+
+.summary-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+    background: white;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.summary-table th {
+    background-color: #1f4172;
+    color: white;
+    padding: 15px;
+    text-align: left;
+}
+
+.summary-table td {
+    padding: 12px 15px;
+    border-bottom: 1px solid #eee;
+}
+
+/* Add style for the numbering column */
+.summary-table td:first-child,
+.summary-table th:first-child {
+    width: 60px;
+    text-align: center;
+}
+
+.records-table {
+    width: 100%;
+    border-collapse: collapse;
+    border: 1px solid #B8CCE4;
+    margin-top: 20px;
+}
+
+.records-table th {
+    background-color: #95B3D7;
+    color: white;
+    font-weight: bold;
+    padding: 12px;
+    text-align: center;
+    border: 1px solid #366092;
+}
+
+.records-table td {
+    padding: 10px;
+    border: 1px solid #B8CCE4;
+}
+
+.records-table tbody tr:nth-child(even) {
+    background-color: white;
+}
+
+.records-table tbody tr:nth-child(odd) {
+    background-color: #EDF3F9;
+}
+
+.export-btn {
+    background-color: #28a745;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 4px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.export-btn:hover {
+    background-color: #218838;
+}
+
+.clickable-row {
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.clickable-row:hover {
+    background-color: #f5f5f5;
+}
+
+/* Add these styles for the export table */
+#exportTable {
+    border-collapse: collapse;
+    width: 100%;
+}
+
+#exportTable .report-header {
+    font-size: 16px;
+    font-weight: bold;
+    text-align: center;
+    padding: 10px;
+    background-color: #1f4172;
+    color: white;
+}
+
+#exportTable .report-subheader {
+    font-size: 14px;
+    font-weight: bold;
+    text-align: center;
+    padding: 8px;
+    background-color: #f1f1f1;
+}
+
+#exportTable .report-info,
+#exportTable .patient-info {
+    text-align: left;
+    padding: 8px;
+    font-weight: normal;
+}
+
+#exportTable .column-headers th {
+    background-color: #e6e6e6;
+    font-weight: bold;
+    text-align: left;
+    padding: 8px;
+}
+
+#exportTable .even-row {
+    background-color: #ffffff;
+}
+
+#exportTable .odd-row {
+    background-color: #f9f9f9;
+}
+
+#exportTable .report-footer {
+    text-align: right;
+    padding: 8px;
+    font-style: italic;
+    border-top: 2px solid #ddd;
+}
+
+#exportTable .no-records {
+    text-align: center;
+    font-style: italic;
+    padding: 10px;
+}
+
+/* Excel-like table styles */
+.excel-preview-table {
+    margin: 20px 0;
+    overflow-x: auto;
+    background: white;
+    padding: 20px;
+    border-radius: 4px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.styled-table {
+    width: 100%;
+    border-collapse: collapse;
+    border: 1px solid #366092;
+}
+
+.styled-table th,
+.styled-table td {
+    border: 1px solid #B8CCE4;
+    padding: 10px;
+}
+
+.report-header th {
+    background-color: #4F81BD;
+    color: white;
+    font-size: 16px;
+    font-weight: bold;
+    padding: 12px;
+    text-align: center;
+}
+
+.report-subheader th {
+    background-color: #B8CCE4;
+    color: black;
+    font-size: 14px;
+    font-weight: bold;
+    padding: 10px;
+    text-align: center;
+}
+
+.date-range th,
+.patient-info th {
+    background-color: #DCE6F1;
+    color: black;
+    font-size: 12px;
+    padding: 8px;
+    text-align: left;
+}
+
+.column-headers th {
+    background-color: #95B3D7;
+    color: white;
+    font-weight: bold;
+    text-align: center;
+    padding: 10px;
+}
+
+.styled-table tbody tr:nth-child(even) {
+    background-color: white;
+}
+
+.styled-table tbody tr:nth-child(odd) {
+    background-color: #EDF3F9;
+}
+
+.report-footer td {
+    background-color: #DCE6F1;
+    color: black;
+    font-style: italic;
+    text-align: right;
+    padding: 8px;
+    font-size: 11px;
+}
+
+/* Update modal styles */
+.w3-modal-content {
+    max-width: 1000px !important;
+}
+
+.modal-header-content {
+    padding: 15px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.export-btn {
+    margin-left: 20px;
+}
+
+/* Add these styles for the table */
+.excel-style-table {
+    margin: 20px 0;
+    overflow-x: auto;
+}
+
+.records-table {
+    width: 100%;
+    border-collapse: collapse;
+    border: 1px solid #B8CCE4;
+}
+
+.records-table th {
+    background-color: #4F81BD;
+    color: white;
+    font-weight: bold;
+    padding: 12px;
+    text-align: center;
+    border: 1px solid #366092;
+}
+
+.records-table td {
+    padding: 10px;
+    border: 1px solid #B8CCE4;
+}
+
+.records-table tbody tr:nth-child(even) {
+    background-color: white;
+}
+
+.records-table tbody tr:nth-child(odd) {
+    background-color: #EDF3F9;
+}
+
+/* Modal animation */
+.w3-animate-zoom {
+    animation: animatezoom 0.6s;
+}
+
+@keyframes animatezoom {
+    from {transform: scale(0)} 
+    to {transform: scale(1)}
+}
+
+.export-btn {
+    background-color: #28a745;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 4px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.export-btn:hover {
+    background-color: #218838;
+}
+
+/* Add these styles */
+.patient-info-header {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.patient-id-badge {
+    background-color: rgba(255, 255, 255, 0.2);
+    padding: 4px 12px;
+    border-radius: 4px;
+    font-size: 0.9em;
+}
+
+.clinic-header {
+    background-color: #4F81BD !important;
+    color: white;
+    font-size: 1.2em;
+    padding: 15px !important;
+}
+
+.record-title {
+    background-color: #B8CCE4 !important;
+    color: #1f4172;
+    font-size: 1.1em;
+    padding: 12px !important;
+}
+
+.records-table {
+    width: 100%;
+    border-collapse: collapse;
+    border: 1px solid #B8CCE4;
+    margin-top: 20px;
+}
+
+.records-table th {
+    background-color: #95B3D7;
+    color: white;
+    font-weight: bold;
+    padding: 12px;
+    text-align: center;
+    border: 1px solid #366092;
+}
+
+.records-table td {
+    padding: 10px;
+    border: 1px solid #B8CCE4;
+}
+
+.records-table tbody tr:nth-child(even) {
+    background-color: white;
+}
+
+.records-table tbody tr:nth-child(odd) {
+    background-color: #EDF3F9;
+}
+
+.modal-header-content {
+    padding: 15px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.export-btn {
+    background-color: #28a745;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 4px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.export-btn:hover {
+    background-color: #218838;
+}
+
+.patient-details-row th {
+    background-color: #DCE6F1;
+    color: #1f4172;
+    font-weight: bold;
+    text-align: right;
+    width: 25%;
+}
+
+.patient-details-row td {
+    text-align: left;
+}
+
+.record-subtitle {
+    background-color: #95B3D7 !important;
+    color: white;
+    font-size: 1.1em;
+    padding: 10px !important;
+    text-align: center;
+}
+
+.text-center {
+    text-align: center;
+}
+
+/* Add to existing styles */
+.export-btn {
+    background-color: #28a745;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 4px;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    margin-left: 10px;
+}
+
+.export-btn:hover {
+    background-color: #218838;
+}
+
+.filter-section {
+    display: flex;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+/* Updated patient card styles */
+.patients-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
+    gap: 20px;
+    margin-top: 20px;
+}
+
+.patient-card {
+    background: white;
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.patient-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+
+.patient-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 15px;
+    padding-bottom: 15px;
+    border-bottom: 1px solid #eee;
+}
+
+.patient-main-info h3 {
+    margin: 0;
+    color: #1f4172;
+    font-size: 1.2em;
+    font-weight: 600;
+}
+
+.patient-id {
+    color: #666;
+    font-size: 0.9em;
+    margin-top: 4px;
+    display: block;
+}
+
+.patient-status {
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 0.85em;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.patient-status.active {
+    background-color: #e8f5e9;
+    color: #2e7d32;
+}
+
+.patient-status.inactive {
+    background-color: #ffebee;
+    color: #c62828;
+}
+
+.patient-status i {
+    font-size: 0.8em;
+}
+
+.patient-info-grid {
+    display: grid;
+    gap: 15px;
+    margin-bottom: 20px;
+}
+
+.info-group {
+    display: grid;
+    gap: 10px;
+}
+
+.info-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: #555;
+}
+
+.info-item i {
+    color: #1f4172;
+    width: 16px;
+    text-align: center;
+}
+
+.patient-records {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-top: 15px;
+    border-top: 1px solid #eee;
+}
+
+.records-summary {
+    display: flex;
+    gap: 20px;
+}
+
+.record-count {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: #666;
+    font-size: 0.9em;
+}
+
+.record-count i {
+    color: #1f4172;
+}
+
+.view-details-btn {
+    background-color: #1f4172;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 0.9em;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    transition: background-color 0.2s;
+}
+
+.view-details-btn:hover {
+    background-color: #2a5498;
+}
+
+.filter-section {
+    display: flex;
+    gap: 15px;
+    margin-bottom: 20px;
+}
+
+.filter-section input,
+.filter-section select {
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    font-size: 0.95em;
+}
+
+.filter-section input {
+    flex: 1;
+}
+
+.filter-section select {
+    min-width: 150px;
+}
+
+.filter-section {
+    display: flex;
+    gap: 15px;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+    align-items: center;
+}
+
+.filter-section select,
+.filter-section input {
+    padding: 8px 12px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    font-size: 0.95em;
+}
+
+.filter-section input[type="text"] {
+    flex: 1;
+    min-width: 200px;
+}
+
+.filter-section select {
+    min-width: 120px;
+}
+
+.filter-section input[type="date"] {
+    min-width: 150px;
+}
+
+.w3-modal {
+    z-index: 3;
+    display: none;
+    padding-top: 100px;
+    position: fixed;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0,0,0,0.4);
+}
+
+.w3-modal-content {
+    margin: auto;
+    background-color: #fff;
+    position: relative;
+    padding: 0;
+    outline: 0;
+    width: 600px;
+}
+
+.w3-display-topright {
+    position: absolute;
+    right: 0;
+    top: 0;
+    padding: 8px 16px;
+    cursor: pointer;
+    font-size: 18px;
+}
+
+.patient-info-header {
+    padding: 15px;
+}
+
+.patient-id-badge {
+    background: rgba(255,255,255,0.2);
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 0.9em;
+    margin-left: 10px;
+}
+
+.w3-animate-zoom {
+    animation: animatezoom 0.6s;
+}
+
+@keyframes animatezoom {
+    from {transform: scale(0)} 
+    to {transform: scale(1)}
+}
+
+.view-btn {
+    background-color: #1f4172;
+    color: white;
+    padding: 8px 16px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.view-btn:hover {
+    background-color: #2a5498;
+}
+
+.chart-container {
+    padding: 20px;
+}
+
+.chart-row {
+    display: flex;
+    gap: 20px;
+    margin-bottom: 20px;
+}
+
+.pie-chart {
+    flex: 1;
+    min-width: 300px;
+    max-width: 500px;
+}
+
+.stats-summary {
+    flex: 1;
+    padding: 20px;
+    background-color: #f5f5f5;
+    border-radius: 8px;
+}
+
+.table-container {
+    margin-top: 20px;
+    max-height: 400px;
+    overflow-y: auto;
+}
+
+.stats-summary h4 {
+    margin-top: 0;
+    color: #1f4172;
+}
+
+#statsContent {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 15px;
+}
+
+.stat-item {
+    background: white;
+    padding: 10px;
+    border-radius: 4px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.stat-item .label {
+    color: #666;
+    font-size: 0.9em;
+}
+
+.stat-item .value {
+    color: #1f4172;
+    font-size: 1.2em;
+    font-weight: bold;
+}
+
+.export-buttons {
+    margin-top: 20px;
+    display: flex;
+    gap: 10px;
+    justify-content: flex-end;
+    padding: 0 20px 20px;
+}
+
+.export-btn {
+    background-color: #28a745;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 4px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.export-btn:hover {
+    background-color: #218838;
+}
+
+.export-buttons {
+    margin-top: 20px;
+    display: flex;
+    gap: 10px;
+    justify-content: flex-end;
+    padding: 0 20px 20px;
+}
+
+.export-btn {
+    padding: 8px 16px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 14px;
+    color: white;
+    transition: background-color 0.3s;
+}
+
+.pdf-btn {
+    background-color: #dc3545;
+}
+
+.pdf-btn:hover {
+    background-color: #c82333;
+}
+
+.excel-btn {
+    background-color: #28a745;
+}
+
+.excel-btn:hover {
+    background-color: #218838;
+}
+
+.chart-container {
+    padding: 20px;
+}
+
+.chart-row {
+    display: flex;
+    gap: 20px;
+    margin-bottom: 20px;
+}
+
+.chart-col {
+    flex: 1;
+    min-height: 300px;
+}
+
+.stats-summary {
+    padding: 20px;
+    background-color: #f8f9fa;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.stats-summary h4 {
+    margin-top: 0;
+    color: #1f4172;
+    margin-bottom: 15px;
+}
+
+#statsContent {
+    display: grid;
+    gap: 10px;
+}
+
+.stat-item {
+    background: white;
+    padding: 12px;
+    border-radius: 6px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+.stat-item .label {
+    color: #666;
+    font-size: 0.9em;
+    margin-bottom: 4px;
+}
+
+.stat-item .value {
+    color: #1f4172;
+    font-size: 1.2em;
+    font-weight: 600;
+}
+</style>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+<script src="https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js"></script>
+
+<script>
+function loadTabData(tabName) {
+    const url = `/reports/${tabName}`;
+    const tableBody = document.querySelector(`#${tabName}-table tbody`);
+    
+    fetch(url)
+        .then(response => response.json())
+        .then(data => {
+            tableBody.innerHTML = '';
+            data.forEach((record, index) => {
+                const row = `
+                    <tr class="clickable-row" 
+                        onclick="showPatientDetails('${record.PT_ID}', '${record.PT_FNAME} ${record.PT_LNAME}')"
+                        data-operation="${record.OPERATION}"
+                        data-date="${record.MODIFIED_DATE}">
+                        <td class="text-center">${index + 1}</td>
+                        <td>${record.PT_ID}</td>
+                        <td>${record.PT_FNAME} ${record.PT_LNAME}</td>
+                        <td>${record.OPERATION}</td>
+                        <td>${formatDateTime(record.MODIFIED_DATE)}</td>
+                    </tr>
+                `;
+                tableBody.insertAdjacentHTML('beforeend', row);
+            });
+        })
+        .catch(error => {
+            console.error('Error loading data:', error);
+            tableBody.innerHTML = '<tr><td colspan="5" class="text-center">Error loading data</td></tr>';
+        });
+}
+
+function showTab(tabName) {
+    // Hide all tabs
+    document.querySelectorAll('.tab-pane').forEach(tab => {
+        tab.classList.remove('active');
+    });
+    
+    // Remove active class from all buttons
+    document.querySelectorAll('.tab-btn').forEach(btn => {
+        btn.classList.remove('active');
+    });
+    
+    // Show selected tab
+    document.getElementById(tabName + '-tab').classList.add('active');
+    
+    // Add active class to clicked button
+    document.querySelector(`[onclick="showTab('${tabName}')"]`).classList.add('active');
+}
+
+// Add this to ensure patients tab is shown when directly accessing /reports/patients
+if (window.location.pathname === '/reports/patients') {
+    showTab('patients');
+}
+
+function formatDateTime(dateString) {
+    if (!dateString) return '';
+    const date = new Date(dateString);
+    return date.toLocaleString();
+}
+
+// Load initial tab data when page loads
+document.addEventListener('DOMContentLoaded', function() {
+    showTab('all-patients');
+});
+
+function updateDateFilter() {
+    const filterType = document.getElementById('filterType').value;
+    
+    // Hide all filters first
+    document.getElementById('dayFilter').style.display = 'none';
+    document.getElementById('monthFilter').style.display = 'none';
+    document.getElementById('yearFilter').style.display = 'none';
+    
+    // Show the selected filter
+    switch(filterType) {
+        case 'day':
+            document.getElementById('dayFilter').style.display = 'inline-block';
+            break;
+        case 'month':
+            document.getElementById('monthFilter').style.display = 'inline-block';
+            document.getElementById('yearFilter').style.display = 'inline-block';
+            break;
+        case 'year':
+            document.getElementById('yearFilter').style.display = 'inline-block';
+            break;
+    }
+    
+    filterAllPatients();
+}
+
+function filterAllPatients() {
+    const searchText = document.getElementById('allPatientsSearch').value.toLowerCase();
+    const filterType = document.getElementById('filterType').value;
+    const rows = document.querySelectorAll('#allPatientsTable tbody tr');
+    
+    rows.forEach(row => {
+        const text = row.textContent.toLowerCase();
+        const dateCell = row.cells[4].textContent; // Modified Date column
+        let show = text.includes(searchText);
+        
+        if (show && filterType !== 'all' && dateCell) {
+            const date = new Date(dateCell);
+            
+            switch(filterType) {
+                case 'day':
+                    const selectedDay = document.getElementById('dayFilter').value;
+                    if (selectedDay) {
+                        show = dateCell.startsWith(selectedDay);
+                    }
+                    break;
+                    
+                case 'month':
+                    const selectedMonth = document.getElementById('monthFilter').value;
+                    const selectedYear = document.getElementById('yearFilter').value;
+                    if (selectedMonth && selectedYear) {
+                        show = date.getMonth() + 1 === parseInt(selectedMonth) && 
+                              date.getFullYear() === parseInt(selectedYear);
+                    }
+                    break;
+                    
+                case 'year':
+                    const yearValue = document.getElementById('yearFilter').value;
+                    if (yearValue) {
+                        show = date.getFullYear() === parseInt(yearValue);
+                    }
+                    break;
+            }
+        }
+        
+        row.style.display = show ? '' : 'none';
+    });
+}
+
+// Initialize date filter on page load
+document.addEventListener('DOMContentLoaded', function() {
+    const today = new Date().toISOString().split('T')[0];
+    const dayFilter = document.getElementById('dayFilter');
+    
+    // Set date range for day filter
+    dayFilter.max = today;
+    dayFilter.min = '2020-01-01';  // Set minimum date as needed
+    
+    // Set initial filter type
+    updateDateFilter();
+});
+
+function updatePatientsDateFilter() {
+    const filterType = document.getElementById('patientsFilterType').value;
+    
+    // Hide all filters first
+    document.getElementById('patientsDateFilter').style.display = 'none';
+    document.getElementById('patientsMonthFilter').style.display = 'none';
+    document.getElementById('patientsYearFilter').style.display = 'none';
+    
+    // Show the selected filter
+    switch(filterType) {
+        case 'day':
+            document.getElementById('patientsDateFilter').style.display = 'inline-block';
+            break;
+        case 'month':
+            document.getElementById('patientsMonthFilter').style.display = 'inline-block';
+            document.getElementById('patientsYearFilter').style.display = 'inline-block';
+            break;
+        case 'year':
+            document.getElementById('patientsYearFilter').style.display = 'inline-block';
+            break;
+    }
+    
+    filterPatients();
+}
+
+function filterPatients() {
+    const searchText = document.getElementById('patientsSearch').value.toLowerCase();
+    const filterType = document.getElementById('patientsFilterType').value;
+    const rows = document.querySelectorAll('#patientsTable tbody tr');
+    
+    rows.forEach(row => {
+        const text = row.textContent.toLowerCase();
+        const dateCell = row.cells[4].textContent;
+        const operation = row.cells[3].textContent;
+        
+        // Only show rows with UPDATED, CHECK UP, or IMMUNIZATION operations
+        if (!['UPDATED', 'CHECK UP', 'IMMUNIZATION'].includes(operation)) {
+            row.style.display = 'none';
+            return;
+        }
+        
+        let show = text.includes(searchText);
+        
+        if (show && filterType !== 'all' && dateCell) {
+            const date = new Date(dateCell);
+            
+            switch(filterType) {
+                case 'day':
+                    const selectedDay = document.getElementById('patientsDateFilter').value;
+                    if (selectedDay) {
+                        show = dateCell.startsWith(selectedDay);
+                    }
+                    break;
+                    
+                case 'month':
+                    const selectedMonth = document.getElementById('patientsMonthFilter').value;
+                    const selectedYear = document.getElementById('patientsYearFilter').value;
+                    if (selectedMonth && selectedYear) {
+                        show = date.getMonth() + 1 === parseInt(selectedMonth) && 
+                              date.getFullYear() === parseInt(selectedYear);
+                    }
+                    break;
+                    
+                case 'year':
+                    const yearValue = document.getElementById('patientsYearFilter').value;
+                    if (yearValue) {
+                        show = date.getFullYear() === parseInt(yearValue);
+                    }
+                    break;
+            }
+        }
+        
+        row.style.display = show ? '' : 'none';
+    });
+}
+
+function filterNewPatients() {
+    const searchText = document.getElementById('newPatientsSearch').value.toLowerCase();
+    const rows = document.querySelectorAll('#newPatientsTable tbody tr');
+    
+    rows.forEach(row => {
+        const text = row.textContent.toLowerCase();
+        const operation = row.cells[3].textContent;
+        
+        // Only show rows with INSERT operation
+        if (operation !== 'INSERT') {
+            row.style.display = 'none';
+            return;
+        }
+        
+        row.style.display = text.includes(searchText) ? '' : 'none';
+    });
+}
+
+async function showPatientDetails(patientId, patientName) {
+    try {
+        // Fetch patient operations
+        const response = await fetch(`/patient/${patientId}/operations`);
+        if (!response.ok) {
+            throw new Error('Failed to fetch operations');
+        }
+        const operations = await response.json();
+        
+        // Update modal with patient info
+        document.getElementById('modalPatientName').textContent = patientName;
+        document.getElementById('modalPatientId').textContent = `ID: ${patientId}`;
+        document.getElementById('detailsPatientName').textContent = patientName;
+        
+        // Update operations history table
+        const tbody = document.getElementById('operationsHistoryBody');
+        tbody.innerHTML = '';
+        
+        if (operations.length === 0) {
+            tbody.innerHTML = `
+                <tr>
+                    <td colspan="4" class="text-center">No operations history found</td>
+                </tr>
+            `;
+        } else {
+            operations.forEach((operation, index) => {
+                const date = new Date(operation.MODIFIED_DATE);
+                const row = `
+                    <tr>
+                        <td class="text-center">${index + 1}</td>
+                        <td>${operation.OPERATION}</td>
+                        <td>${date.toLocaleDateString()}</td>
+                        <td>${date.toLocaleTimeString()}</td>
+                    </tr>
+                `;
+                tbody.insertAdjacentHTML('beforeend', row);
+            });
+        }
+        
+        // Show modal
+        document.getElementById('allPatientModal').style.display = 'block';
+    } catch (error) {
+        console.error('Error:', error);
+        alert('Error loading patient operations');
+    }
+}
+
+// Add close modal function
+function closePatientModal() {
+    document.getElementById('allPatientModal').style.display = 'none';
+}
+
+// Close modal when clicking outside
+window.onclick = function(event) {
+    const modal = document.getElementById('allPatientModal');
+    if (event.target === modal) {
+        modal.style.display = 'none';
+    }
+}
+
+let chartInstance = null;
+
+function showChartModal(type) {
+    const modal = document.getElementById('chartModal');
+    const title = document.getElementById('chartTitle');
+    const tableBody = document.getElementById('chartTableBody');
+    const statsContent = document.getElementById('statsContent');
+    
+    // Get visible rows from the current table
+    const tableId = type === 'all' ? 'allPatientsTable' : 
+                   type === 'patients' ? 'patientsTable' : 'newPatientsTable';
+    const rows = Array.from(document.querySelectorAll(`#${tableId} tbody tr`))
+                     .filter(row => row.style.display !== 'none');
+    
+    // Set title and prepare data based on type
+    switch(type) {
+        case 'all':
+            title.textContent = 'All Patient Records Analysis';
+            createAllPatientsChart(rows);
+            break;
+        case 'patients':
+            title.textContent = 'Patient Operations Analysis';
+            createPatientsChart(rows);
+            break;
+        case 'new':
+            title.textContent = 'New Patients Analysis';
+            createNewPatientsChart(rows);
+            break;
+    }
+    
+    // Update table
+    updateChartTable(rows);
+    
+    modal.style.display = 'block';
+}
+
+function createAllPatientsChart(rows) {
+    const operationCounts = {};
+    rows.forEach(row => {
+        const operation = row.cells[3].textContent;
+        operationCounts[operation] = (operationCounts[operation] || 0) + 1;
+    });
+    
+    createPieChart(operationCounts, [
+        '#1f4172', '#4CAF50', '#FFC107', '#9C27B0', '#FF5722'
+    ]);
+    updateStats(operationCounts, rows.length);
+}
+
+function createPatientsChart(rows) {
+    const operationCounts = {};
+    rows.forEach(row => {
+        const operation = row.cells[3].textContent;
+        if (operation === 'UPDATED' || operation === 'CHECK UP' || operation === 'IMMUNIZATION') {
+            operationCounts[operation] = (operationCounts[operation] || 0) + 1;
+        }
+    });
+    
+    createPieChart(operationCounts, [
+        '#2196F3', '#4CAF50', '#FFC107'
+    ]);
+    updateStats(operationCounts, rows.length);
+}
+
+function createNewPatientsChart(rows) {
+    // Group by date for new patients
+    const dateGroups = {};
+    rows.forEach(row => {
+        const date = new Date(row.cells[4].textContent).toLocaleDateString();
+        dateGroups[date] = (dateGroups[date] || 0) + 1;
+    });
+    
+    // Create line chart for new patients
+    const ctx = document.getElementById('operationsChart').getContext('2d');
+    if (chartInstance) {
+        chartInstance.destroy();
+    }
+    
+    chartInstance = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: Object.keys(dateGroups),
+            datasets: [{
+                label: 'New Patients per Day',
+                data: Object.values(dateGroups),
+                borderColor: '#1f4172',
+                backgroundColor: 'rgba(31, 65, 114, 0.1)',
+                tension: 0.1,
+                fill: true
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: {
+                    position: 'bottom'
+                },
+                title: {
+                    display: true,
+                    text: 'New Patients Registration Trend'
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    ticks: {
+                        stepSize: 1
+                    }
+                }
+            }
+        }
+    });
+    
+    // Update stats for new patients
+    const total = rows.length;
+    const avgPerDay = total / Object.keys(dateGroups).length;
+    document.getElementById('statsContent').innerHTML = `
+        <div class="stat-item">
+            <div class="label">Total New Patients</div>
+            <div class="value">${total}</div>
+        </div>
+        <div class="stat-item">
+            <div class="label">Days with Registrations</div>
+            <div class="value">${Object.keys(dateGroups).length}</div>
+        </div>
+        <div class="stat-item">
+            <div class="label">Average per Day</div>
+            <div class="value">${avgPerDay.toFixed(1)}</div>
+        </div>
+    `;
+}
+
+function createPieChart(data, colors) {
+    const ctx = document.getElementById('operationsChart').getContext('2d');
+    if (chartInstance) {
+        chartInstance.destroy();
+    }
+    
+    chartInstance = new Chart(ctx, {
+        type: 'pie',
+        data: {
+            labels: Object.keys(data),
+            datasets: [{
+                data: Object.values(data),
+                backgroundColor: colors
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: {
+                    position: 'bottom'
+                }
+            }
+        }
+    });
+}
+
+function updateStats(data, total) {
+    document.getElementById('statsContent').innerHTML = `
+        <div class="stat-item">
+            <div class="label">Total Records</div>
+            <div class="value">${total}</div>
+        </div>
+        ${Object.entries(data).map(([operation, count]) => `
+            <div class="stat-item">
+                <div class="label">${operation}</div>
+                <div class="value">${count} (${((count/total)*100).toFixed(1)}%)</div>
+            </div>
+        `).join('')}
+    `;
+}
+
+function updateChartTable(rows) {
+    document.getElementById('chartTableBody').innerHTML = rows.map((row, index) => `
+        <tr>
+            <td class="text-center">${index + 1}</td>
+            <td>${row.cells[1].textContent}</td>
+            <td>${row.cells[2].textContent}</td>
+            <td>${row.cells[3].textContent}</td>
+            <td>${row.cells[4].textContent}</td>
+        </tr>
+    `).join('');
+}
+
+function closeChartModal() {
+    document.getElementById('chartModal').style.display = 'none';
+}
+
+// Close modal when clicking outside
+window.onclick = function(event) {
+    const modal = document.getElementById('chartModal');
+    if (event.target === modal) {
+        modal.style.display = 'none';
+    }
+}
+
+function exportChartToPDF() {
+    // Get the current tab content
+    const currentTab = document.querySelector('.tab-pane.active');
+    const tableId = currentTab.querySelector('.records-table').id;
+    const table = document.getElementById(tableId);
+    
+    // Get the chart if it exists
+    const chartCanvas = document.getElementById('operationsChart');
+    
+    // Create a new div for PDF content
+    const pdfContent = document.createElement('div');
+    pdfContent.style.padding = '20px';
+    
+    // Add header
+    const header = document.createElement('div');
+    header.innerHTML = `
+        <h2 style="text-align: center; color: #1f4172;">KEEPSAKE CLINIC</h2>
+        <h3 style="text-align: center; color: #1f4172;">Patient Records Report</h3>
+        <p style="text-align: center;">Generated on: ${new Date().toLocaleString()}</p>
+        <hr style="margin: 20px 0;">
+    `;
+    pdfContent.appendChild(header);
+    
+    // Add chart if it exists
+    if (chartCanvas && chartInstance) {
+        const chartContainer = document.createElement('div');
+        chartContainer.style.marginBottom = '20px';
+        chartContainer.style.textAlign = 'center';
+        
+        // Convert chart to image
+        const chartImage = document.createElement('img');
+        chartImage.src = chartCanvas.toDataURL('image/png');
+        chartImage.style.maxWidth = '100%';
+        chartImage.style.height = 'auto';
+        
+        chartContainer.appendChild(chartImage);
+        pdfContent.appendChild(chartContainer);
+    }
+    
+    // Add statistics if they exist
+    const statsContent = document.getElementById('statsContent');
+    if (statsContent) {
+        const statsContainer = document.createElement('div');
+        statsContainer.style.marginBottom = '20px';
+        statsContainer.innerHTML = `
+            <h4 style="color: #1f4172;">Statistics Summary</h4>
+            ${statsContent.innerHTML}
+        `;
+        pdfContent.appendChild(statsContainer);
+    }
+    
+    // Add table
+    const tableContainer = document.createElement('div');
+    tableContainer.style.marginTop = '20px';
+    tableContainer.innerHTML = table.outerHTML;
+    pdfContent.appendChild(tableContainer);
+    
+    // Configure PDF options
+    const opt = {
+        margin: 1,
+        filename: 'patient_records_report.pdf',
+        image: { type: 'jpeg', quality: 0.98 },
+        html2canvas: { scale: 2 },
+        jsPDF: { unit: 'in', format: 'letter', orientation: 'landscape' }
+    };
+    
+    // Generate PDF
+    html2pdf().set(opt).from(pdfContent).save()
+        .catch(err => {
+            console.error('Error generating PDF:', err);
+            alert('Error generating PDF. Please try again.');
+        });
+}
+
+// Add these helper functions for styling the PDF content
+function getTableStyles() {
+    return `
+        <style>
+            table {
+                width: 100%;
+                border-collapse: collapse;
+                margin-top: 20px;
+            }
+            th, td {
+                border: 1px solid #B8CCE4;
+                padding: 8px;
+                text-align: left;
+            }
+            th {
+                background-color: #4F81BD;
+                color: white;
+            }
+            tr:nth-child(even) {
+                background-color: #EDF3F9;
+            }
+            .clinic-header {
+                background-color: #4F81BD;
+                color: white;
+                font-size: 1.2em;
+                text-align: center;
+            }
+            .record-title {
+                background-color: #B8CCE4;
+                color: #1f4172;
+                font-size: 1.1em;
+                text-align: center;
+            }
+            .text-center {
+                text-align: center;
+            }
+        </style>
+    `;
+}
+
+function formatStatsForPDF(stats) {
+    return `
+        <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 15px;">
+            ${Object.entries(stats).map(([key, value]) => `
+                <div style="background: white; padding: 10px; border-radius: 4px; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
+                    <div style="color: #666; font-size: 0.9em;">${key}</div>
+                    <div style="color: #1f4172; font-size: 1.2em; font-weight: 600;">${value}</div>
+                </div>
+            `).join('')}
+        </div>
+    `;
+}
+
+function exportChartToExcel() {
+    // Get the current tab content
+    const currentTab = document.querySelector('.tab-pane.active');
+    const tableId = currentTab.querySelector('.records-table').id;
+    const table = document.getElementById(tableId);
+    
+    try {
+        // Create a new workbook
+        const wb = XLSX.utils.book_new();
+        
+        // Add header information
+        const headerData = [
+            ['KEEPSAKE CLINIC'],
+            ['Patient Records Report'],
+            [`Generated on: ${new Date().toLocaleString()}`],
+            [] // Empty row for spacing
+        ];
+        
+        // Get statistics if they exist
+        const statsContent = document.getElementById('statsContent');
+        const statsData = [];
+        if (statsContent) {
+            statsData.push(['Statistics Summary']);
+            const statItems = statsContent.querySelectorAll('.stat-item');
+            statItems.forEach(item => {
+                const label = item.querySelector('.label').textContent;
+                const value = item.querySelector('.value').textContent;
+                statsData.push([label, value]);
+            });
+            statsData.push([]); // Empty row for spacing
+        }
+        
+        // Get table data
+        const tableData = [];
+        
+        // Get table headers
+        const headers = [];
+        table.querySelectorAll('tr.column-headers th').forEach(th => {
+            headers.push(th.textContent.trim());
+        });
+        tableData.push(headers);
+        
+        // Get table body data
+        const visibleRows = Array.from(table.querySelectorAll('tbody tr'))
+            .filter(row => row.style.display !== 'none');
+        
+        visibleRows.forEach(row => {
+            const rowData = [];
+            row.querySelectorAll('td').forEach(cell => {
+                rowData.push(cell.textContent.trim());
+            });
+            tableData.push(rowData);
+        });
+        
+        // Combine all data
+        const allData = [...headerData, ...statsData, ...tableData];
+        
+        // Create worksheet
+        const ws = XLSX.utils.aoa_to_sheet(allData);
+        
+        // Set column widths
+        const colWidths = headers.map(() => ({ wch: 15 }));
+        ws['!cols'] = colWidths;
+        
+        // Add style to header cells
+        const headerStyle = {
+            font: { bold: true, color: { rgb: "FFFFFF" } },
+            fill: { fgColor: { rgb: "4F81BD" } },
+            alignment: { horizontal: "center" }
+        };
+        
+        // Apply styles to header rows
+        for (let i = 0; i < headerData.length; i++) {
+            const cell = XLSX.utils.encode_cell({ r: i, c: 0 });
+            if (!ws[cell]) continue;
+            ws[cell].s = headerStyle;
+        }
+        
+        // Add worksheet to workbook
+        XLSX.utils.book_append_sheet(wb, ws, "Patient Records");
+        
+        // Generate Excel file
+        const currentDate = new Date().toISOString().slice(0,10);
+        XLSX.writeFile(wb, `patient_records_${currentDate}.xlsx`);
+        
+    } catch (err) {
+        console.error('Error generating Excel file:', err);
+        alert('Error generating Excel file. Please try again.');
+    }
+}
+
+// Helper function to style Excel cells
+function getExcelStyles() {
+    return {
+        header: {
+            font: { bold: true, color: { rgb: "FFFFFF" } },
+            fill: { fgColor: { rgb: "4F81BD" } },
+            alignment: { horizontal: "center" }
+        },
+        subheader: {
+            font: { bold: true },
+            fill: { fgColor: { rgb: "B8CCE4" } },
+            alignment: { horizontal: "center" }
+        },
+        cell: {
+            alignment: { horizontal: "left" },
+            border: {
+                top: { style: "thin" },
+                bottom: { style: "thin" },
+                left: { style: "thin" },
+                right: { style: "thin" }
+            }
+        },
+        alternateRow: {
+            fill: { fgColor: { rgb: "EDF3F9" } }
+        }
+    };
+}
+
+// Helper function to format date for Excel
+function formatDateForExcel(date) {
+    return new Date(date).toLocaleDateString();
+}
+
+// Helper function to format numbers for Excel
+function formatNumberForExcel(num) {
+    return typeof num === 'number' ? num.toLocaleString() : num;
+}
+</script>
+{% endblock %} 
