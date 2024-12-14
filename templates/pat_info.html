@@ -8,9 +8,12 @@
                 </a>
                 <h1 style="margin-left: 10px;">{{ patient['PT_FNAME'] }} {{patient['PT_LNAME']}}</h1>
             </div>
+            <div class="action-buttons">
+                <button class="edit-btn" onclick="editPatient()">EDIT</button>
+                <button class="deactivate-btn" onclick="deactivatePatient()">DEACTIVATE</button>
+            </div>
         </div>
 
-        <!-- Tabs -->
         <div class="tabs">
             <button class="active" id="information">INFORMATION</button>
             <button id="immunization">IMMUNIZATION</button>
@@ -151,7 +154,6 @@
             </div>
 
             <div class="tab-panel" id="prescription-panel" style="display: none;">
-                <!-- Prescription content will go here -->
             </div>
         </div>
     </div>

@@ -1136,7 +1136,7 @@ def add_vax():
         """
         result = getallprocess(check_sql, (pt_id, vaccine.strip().upper() if vaccine else ''))
         is_edit = result[0]['count'] > 0
-        current_doses = result[0]['current_doses'] or 0
+        current_doses = result[0]['current_doses'] or 0 
 
         if is_edit:
             # For editing, only validate the date field
