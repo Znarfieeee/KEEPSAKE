@@ -3,8 +3,8 @@ import pyodbc as odbc
 try:
     # Establish database connection
     db = odbc.connect(
-        'DRIVER=ODBC Driver 11 for SQL Server;' 
-        'SERVER=PRNSDAGREAT'                  
+        'DRIVER={ODBC Driver 18 for SQL Server};' 
+        'SERVER=PRNSDAGREAT;'                  
         'DATABASE=KEEPSAKE;'           
         'Trusted_Connection=yes;'          
         'Encrypt=yes;'                       
