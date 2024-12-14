@@ -1,4 +1,4 @@
-from flask import Flask, render_template, redirect, session, url_for, request, flash
+from flask import Flask, render_template, redirect, session, url_for, request, flash, jsonify
 from dbhelper import *
 from datetime import datetime
 
@@ -69,6 +69,7 @@ def deactivate_patient():
     except Exception as e:
         app.logger.error(f"Error deactivating patient: {e}")
         flash("An error occurred while deactivating the patient.", "error")
+    
 
     return redirect(url_for("index"))
 
@@ -398,44 +399,6 @@ def presc_info(patient_id):
         spclty=spclty
     )
     
-
-    return render_template("index.html", pagetitle = "Keepsake", patients=patients, dr_name=dr_name, spclty=spclty)
-
-@app.route('/dashboard')
-def dashboard():
-    if not session.get('logged_in'):
-        return redirect(url_for('login'))
-    
-    # Get summary statistics
-    sql_summary = """
-    SELECT 
-        COUNT(DISTINCT p.PT_ID) as total_patients,
-        COUNT(DISTINCT i.VAX_ID) as total_immunizations,
-        COUNT(DISTINCT px.RX_ID) as total_prescriptions,
-        (SELECT COUNT(*) FROM PATIENT_INFORMATION 
-         WHERE DT_OF_BIRTH >= DATEADD(year, -1, GETDATE())) as patients_under_1
-    FROM PATIENT_INFORMATION p
-    LEFT JOIN IMMUNIZATION_RECORD i ON p.PT_ID = i.PT_ID
-    LEFT JOIN PRESCRIPTIONS px ON p.PT_ID = px.PT_ID
-    """
-    
-    # Get recent patients
-    sql_recent = """
-    SELECT TOP 5 
-        PT_ID, PT_FNAME, PT_LNAME, DT_OF_BIRTH
-    FROM PATIENT_INFORMATION
-    ORDER BY PT_ID DESC
-    """
-    
-    summary = getallprocess(sql_summary)[0]
-    recent_patients = getallprocess(sql_recent)
-    
-    return render_template('dashboard.html', 
-                         summary=summary, 
-                         recent_patients=recent_patients,
-                         dr_name=session.get('dr_name', ''),
-                         spclty=session.get('spclty', ''))
-
 @app.route('/dashboard/details')
 def dashboard_details():
     if not session.get('logged_in'):

@@ -36,13 +36,9 @@
                 </thead>
                 <tbody>
                     {% for record in prescriptions %}
-                    <tr>
+                    <tr onclick="showDiagnosisModal('{{ record.PRESCRIPTION_DATE }}', '/prescription_details/{{ record.PRESCRIPTION_ID }}')">
                         <td>{{ record.PRESCRIPTION_DATE }}</td>
-                        <td>
-                            <a href="#" onclick="showDiagnosisModal('{{ record.PRESCRIPTION_DATE }}', '/prescription_details/{{ record.PRESCRIPTION_ID }}')">
-                                {{ record.DIAGNOSIS }}
-                            </a>
-                        </td>
+                        <td>{{ record.DIAGNOSIS }}</td>
                     </tr>
                     {% endfor %}
                 </tbody>
