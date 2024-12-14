@@ -1,4 +1,8 @@
-{% extends 'base.html' %} 
+{% if session['user_type'] == 1 %}
+    {% extends 'base.html' %}
+{% else %}
+    {% extends 'base-staff.html' %}
+{% endif %}
 {% block content %}
 <div class="information-container">
     <div class="patient-header">
