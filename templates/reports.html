@@ -224,7 +224,7 @@
 
 <div id="allPatientModal" class="w3-modal">
     <div class="w3-modal-content w3-card-4 w3-animate-zoom" style="max-width:900px">
-        <header class="w3-container" style="background-color: #1f4172; color: white;">
+        <header class="w3-container" style="background-color: #006B60; color: white;">
             <span onclick="document.getElementById('allPatientModal').style.display='none'" 
                   class="w3-button w3-display-topright">&times;</span>
             <div class="modal-header-content">
@@ -271,7 +271,7 @@
 <!-- Chart Modal -->
 <div id="chartModal" class="w3-modal">
     <div class="w3-modal-content w3-card-4 w3-animate-zoom" style="max-width:1000px">
-        <header class="w3-container" style="background-color: #1f4172; color: white;">
+        <header class="w3-container" style="background-color: #006B60; color: white;">
             <span onclick="closeChartModal()" class="w3-button w3-display-topright">&times;</span>
             <h3 id="chartTitle" style="margin: 10px 0;">Patient Records Analysis</h3>
         </header>
@@ -346,7 +346,7 @@
 }
 
 .tab-btn.active {
-    color: #1f4172;
+    color: #006B60;
     font-weight: bold;
 }
 
@@ -357,7 +357,7 @@
     left: 0;
     width: 100%;
     height: 2px;
-    background-color: #1f4172;
+    background-color: #006B60;
 }
 
 .tab-pane {
@@ -381,7 +381,7 @@
 }
 
 .reports-header h1 {
-    color: #1f4172;
+    color: #006B60;
     margin: 0;
 }
 
@@ -435,7 +435,7 @@
 
 .info-header h3 {
     margin: 0;
-    color: #1f4172;
+    color: #006B60;
     font-size: 1.2em;
 }
 
@@ -470,7 +470,7 @@
 }
 
 .checkup-details h4 {
-    color: #1f4172;
+    color: #006B60;
     margin: 0 0 10px 0;
     font-size: 1em;
 }
@@ -505,7 +505,7 @@
 }
 
 .details-table th {
-    background-color: #1f4172;
+    background-color: #006B60;
     color: white;
     padding: 12px;
     text-align: left;
@@ -514,6 +514,7 @@
 .details-table td {
     padding: 12px;
     border-bottom: 1px solid #eee;
+    color: #006B60;
 }
 
 .details-table tr:hover {
@@ -521,7 +522,7 @@
 }
 
 .view-findings-btn {
-    background-color: #1f4172;
+    background-color: #006B60;
     color: white;
     border: none;
     padding: 6px 12px;
@@ -531,7 +532,7 @@
 }
 
 .view-findings-btn:hover {
-    background-color: #2a5498;
+    background-color: #9CD49F;
 }
 
 .findings-content {
@@ -543,7 +544,7 @@
 }
 
 .findings-content h4 {
-    color: #1f4172;
+    color: #006B60;
     margin: 0 0 8px 0;
     font-size: 0.9em;
 }
@@ -609,7 +610,7 @@
 
 .patient-main-info h3 {
     margin: 0;
-    color: #1f4172;
+    color: #006B60;
     font-size: 1.2em;
 }
 
@@ -668,14 +669,15 @@
     align-items: center;
     gap: 8px;
     color: #666;
+    font-size: 0.9em;
 }
 
 .record-count i {
-    color: #1f4172;
+    color: #006B60;
 }
 
 .view-details-btn {
-    background-color: #1f4172;
+    background-color: #006B60;
     color: white;
     border: none;
     padding: 8px 16px;
@@ -686,7 +688,7 @@
 }
 
 .view-details-btn:hover {
-    background-color: #2a5498;
+    background-color: #9CD49F;
 }
 
 .patient-basic-info {
@@ -704,7 +706,7 @@
 .info-label {
     font-weight: 500;
     width: 100px;
-    color: #1f4172;
+    color: #006B60;
 }
 
 .info-value {
@@ -716,7 +718,7 @@
 }
 
 .checkup-records h4 {
-    color: #1f4172;
+    color: #006B60;
     margin-bottom: 15px;
 }
 
@@ -739,7 +741,7 @@
 }
 
 .table-container th {
-    background-color: #1f4172;
+    background-color: #006B60;
     color: white;
     font-weight: 500;
 }
@@ -761,7 +763,7 @@
 }
 
 .summary-table th {
-    background-color: #1f4172;
+    background-color: #006B60;
     color: white;
     padding: 15px;
     text-align: left;
@@ -782,22 +784,23 @@
 .records-table {
     width: 100%;
     border-collapse: collapse;
-    border: 1px solid #B8CCE4;
+    border: 1px solid #9CD49F;
     margin-top: 20px;
 }
 
 .records-table th {
-    background-color: #95B3D7;
+    background-color: #9CD49F;
     color: white;
     font-weight: bold;
     padding: 12px;
     text-align: center;
-    border: 1px solid #366092;
+    border: 1px solid #9CD49F;
 }
 
 .records-table td {
     padding: 10px;
-    border: 1px solid #B8CCE4;
+    border: 1px solid #D0F0C0;
+    color: #333;
 }
 
 .records-table tbody tr:nth-child(even) {
@@ -805,7 +808,7 @@
 }
 
 .records-table tbody tr:nth-child(odd) {
-    background-color: #EDF3F9;
+    background-color: #EEF4EB;
 }
 
 .export-btn {
@@ -831,6 +834,7 @@
 
 .clickable-row:hover {
     background-color: #f5f5f5;
+    color: #006B60;
 }
 
 /* Add these styles for the export table */
@@ -844,7 +848,7 @@
     font-weight: bold;
     text-align: center;
     padding: 10px;
-    background-color: #1f4172;
+    background-color: #006B60;
     color: white;
 }
 
@@ -875,7 +879,7 @@
 }
 
 #exportTable .odd-row {
-    background-color: #f9f9f9;
+    background-color: #EEF4EB;
 }
 
 #exportTable .report-footer {
@@ -904,17 +908,17 @@
 .styled-table {
     width: 100%;
     border-collapse: collapse;
-    border: 1px solid #366092;
+    border: 1px solid #9CD49F;
 }
 
 .styled-table th,
 .styled-table td {
-    border: 1px solid #B8CCE4;
+    border: 1px solid #D0F0C0;
     padding: 10px;
 }
 
 .report-header th {
-    background-color: #4F81BD;
+    background-color: #9CD49F;
     color: white;
     font-size: 16px;
     font-weight: bold;
@@ -923,7 +927,7 @@
 }
 
 .report-subheader th {
-    background-color: #B8CCE4;
+    background-color: #D0F0C0   ;
     color: black;
     font-size: 14px;
     font-weight: bold;
@@ -933,7 +937,7 @@
 
 .date-range th,
 .patient-info th {
-    background-color: #DCE6F1;
+    background-color: #E4F0DE;
     color: black;
     font-size: 12px;
     padding: 8px;
@@ -941,7 +945,7 @@
 }
 
 .column-headers th {
-    background-color: #95B3D7;
+    background-color: #9CD49F;
     color: white;
     font-weight: bold;
     text-align: center;
@@ -953,11 +957,11 @@
 }
 
 .styled-table tbody tr:nth-child(odd) {
-    background-color: #EDF3F9;
+    background-color: #EEF4EB;
 }
 
 .report-footer td {
-    background-color: #DCE6F1;
+    background-color: #E4F0DE;
     color: black;
     font-style: italic;
     text-align: right;
@@ -990,21 +994,22 @@
 .records-table {
     width: 100%;
     border-collapse: collapse;
-    border: 1px solid #B8CCE4;
+    border: 1px solid #D0F0C0;
 }
 
 .records-table th {
-    background-color: #4F81BD;
+    background-color: #9CD49F;
     color: white;
     font-weight: bold;
     padding: 12px;
     text-align: center;
-    border: 1px solid #366092;
+    border: 1px solid #9CD49F;
 }
 
 .records-table td {
     padding: 10px;
-    border: 1px solid #B8CCE4;
+    border: 1px solid #D0F0C0;
+    color: #333;
 }
 
 .records-table tbody tr:nth-child(even) {
@@ -1012,7 +1017,7 @@
 }
 
 .records-table tbody tr:nth-child(odd) {
-    background-color: #EDF3F9;
+    background-color: #EEF4EB;
 }
 
 /* Modal animation */
@@ -1056,15 +1061,15 @@
 }
 
 .clinic-header {
-    background-color: #4F81BD !important;
+    background-color: #9CD49F !important;
     color: white;
     font-size: 1.2em;
     padding: 15px !important;
 }
 
 .record-title {
-    background-color: #B8CCE4 !important;
-    color: #1f4172;
+    background-color: #D0F0C0 !important;
+    color: #006B60;
     font-size: 1.1em;
     padding: 12px !important;
 }
@@ -1072,22 +1077,23 @@
 .records-table {
     width: 100%;
     border-collapse: collapse;
-    border: 1px solid #B8CCE4;
+    border: 1px solid #D0F0C0;
     margin-top: 20px;
 }
 
 .records-table th {
-    background-color: #95B3D7;
+    background-color: #9CD49F;
     color: white;
     font-weight: bold;
     padding: 12px;
     text-align: center;
-    border: 1px solid #366092;
+    border: 1px solid #9CD49F;
 }
 
 .records-table td {
     padding: 10px;
-    border: 1px solid #B8CCE4;
+    border: 1px solid #D0F0C0;
+    color: #333;
 }
 
 .records-table tbody tr:nth-child(even) {
@@ -1095,7 +1101,7 @@
 }
 
 .records-table tbody tr:nth-child(odd) {
-    background-color: #EDF3F9;
+    background-color: #EEF4EB;
 }
 
 .modal-header-content {
@@ -1122,8 +1128,8 @@
 }
 
 .patient-details-row th {
-    background-color: #DCE6F1;
-    color: #1f4172;
+    background-color: #E4F0DE;
+    color: #006B60;
     font-weight: bold;
     text-align: right;
     width: 25%;
@@ -1134,7 +1140,7 @@
 }
 
 .record-subtitle {
-    background-color: #95B3D7 !important;
+    background-color: #9CD49F !important;
     color: white;
     font-size: 1.1em;
     padding: 10px !important;
@@ -1143,6 +1149,7 @@
 
 .text-center {
     text-align: center;
+    color: #333;
 }
 
 /* Add to existing styles */
@@ -1201,7 +1208,7 @@
 
 .patient-main-info h3 {
     margin: 0;
-    color: #1f4172;
+    color: #006B60;
     font-size: 1.2em;
     font-weight: 600;
 }
@@ -1255,7 +1262,7 @@
 }
 
 .info-item i {
-    color: #1f4172;
+    color: #006B60;
     width: 16px;
     text-align: center;
 }
@@ -1282,11 +1289,11 @@
 }
 
 .record-count i {
-    color: #1f4172;
+    color: #006B60;
 }
 
 .view-details-btn {
-    background-color: #1f4172;
+    background-color: #006B60;
     color: white;
     border: none;
     padding: 8px 16px;
@@ -1300,7 +1307,7 @@
 }
 
 .view-details-btn:hover {
-    background-color: #2a5498;
+    background-color: #9CD49F;
 }
 
 .filter-section {
@@ -1407,7 +1414,7 @@
 }
 
 .view-btn {
-    background-color: #1f4172;
+    background-color: #006B60;
     color: white;
     padding: 8px 16px;
     border: none;
@@ -1419,7 +1426,7 @@
 }
 
 .view-btn:hover {
-    background-color: #2a5498;
+    background-color: #9CD49F;
 }
 
 .chart-container {
@@ -1453,7 +1460,7 @@
 
 .stats-summary h4 {
     margin-top: 0;
-    color: #1f4172;
+    color: #006B60;
 }
 
 #statsContent {
@@ -1475,7 +1482,7 @@
 }
 
 .stat-item .value {
-    color: #1f4172;
+    color: #006B60;
     font-size: 1.2em;
     font-weight: bold;
 }
@@ -1565,7 +1572,7 @@
 
 .stats-summary h4 {
     margin-top: 0;
-    color: #1f4172;
+    color: #006B60;
     margin-bottom: 15px;
 }
 
@@ -1588,9 +1595,80 @@
 }
 
 .stat-item .value {
-    color: #1f4172;
+    color: #006B60;
     font-size: 1.2em;
     font-weight: 600;
+}
+
+/* Update table header and column widths */
+.records-table th,
+.records-table td {
+    padding: 8px;  /* Reduced padding */
+    border: 1px solid #D0F0C0;
+}
+
+/* Set specific widths for each column */
+.records-table .column-headers th:nth-child(1),
+.records-table td:nth-child(1) {  /* No. column */
+    width: 40px;  /* Smaller width for numbers */
+    text-align: center;
+}
+
+.records-table .column-headers th:nth-child(2),
+.records-table td:nth-child(2) {  /* Patient ID column */
+    width: 80px;  /* Fixed width for ID */
+}
+
+.records-table .column-headers th:nth-child(3),
+.records-table td:nth-child(3) {  /* Patient Name column */
+    width: 180px;  /* More space for names */
+}
+
+.records-table .column-headers th:nth-child(4),
+.records-table td:nth-child(4) {  /* Operation column */
+    width: 100px;  /* Medium width for operation type */
+}
+
+.records-table .column-headers th:nth-child(5),
+.records-table td:nth-child(5) {  /* Date column */
+    width: 130px;  /* Fixed width for dates */
+}
+
+/* Update table header styles */
+.clinic-header {
+    background-color: #9CD49F !important;
+    color: white;
+    font-size: 1em;  /* Reduced font size */
+    padding: 10px !important;  /* Reduced padding */
+    text-align: center;
+}
+
+.record-title {
+    background-color: #D0F0C0 !important;
+    color: #006B60;
+    font-size: 1em;  /* Reduced font size */
+    padding: 8px !important;  /* Reduced padding */
+}
+
+/* Add table layout fixed to maintain column widths */
+.records-table {
+    width: 100%;
+    table-layout: fixed;
+    border-collapse: collapse;
+    border: 1px solid #D0F0C0;
+}
+
+/* Add text overflow handling */
+.records-table td {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* Allow patient name column to wrap if needed */
+.records-table td:nth-child(3) {
+    white-space: normal;
+    word-wrap: break-word;
 }
 </style>
 
@@ -1942,7 +2020,7 @@ function createAllPatientsChart(rows) {
     });
     
     createPieChart(operationCounts, [
-        '#1f4172', '#4CAF50', '#FFC107', '#9C27B0', '#FF5722'
+        '#006B60', '#4CAF50', '#FFC107', '#9C27B0', '#FF5722'
     ]);
     updateStats(operationCounts, rows.length);
 }
@@ -1983,7 +2061,7 @@ function createNewPatientsChart(rows) {
             datasets: [{
                 label: 'New Patients per Day',
                 data: Object.values(dateGroups),
-                borderColor: '#1f4172',
+                borderColor: '#006B60',
                 backgroundColor: 'rgba(31, 65, 114, 0.1)',
                 tension: 0.1,
                 fill: true
@@ -2111,8 +2189,8 @@ function exportChartToPDF() {
     // Add header
     const header = document.createElement('div');
     header.innerHTML = `
-        <h2 style="text-align: center; color: #1f4172;">KEEPSAKE CLINIC</h2>
-        <h3 style="text-align: center; color: #1f4172;">Patient Records Report</h3>
+        <h2 style="text-align: center; color: #006B60;">KEEPSAKE CLINIC</h2>
+        <h3 style="text-align: center; color: #006B60;">Patient Records Report</h3>
         <p style="text-align: center;">Generated on: ${new Date().toLocaleString()}</p>
         <hr style="margin: 20px 0;">
     `;
@@ -2140,7 +2218,7 @@ function exportChartToPDF() {
         const statsContainer = document.createElement('div');
         statsContainer.style.marginBottom = '20px';
         statsContainer.innerHTML = `
-            <h4 style="color: #1f4172;">Statistics Summary</h4>
+            <h4 style="color: #006B60;">Statistics Summary</h4>
             ${statsContent.innerHTML}
         `;
         pdfContent.appendChild(statsContainer);
@@ -2179,26 +2257,26 @@ function getTableStyles() {
                 margin-top: 20px;
             }
             th, td {
-                border: 1px solid #B8CCE4;
+                border: 1px solid #D0F0C0;
                 padding: 8px;
                 text-align: left;
             }
             th {
-                background-color: #4F81BD;
+                background-color: #9CD49F;
                 color: white;
             }
             tr:nth-child(even) {
-                background-color: #EDF3F9;
+                background-color: #EEF4EB;
             }
             .clinic-header {
-                background-color: #4F81BD;
+                background-color: #9CD49F;
                 color: white;
                 font-size: 1.2em;
                 text-align: center;
             }
             .record-title {
-                background-color: #B8CCE4;
-                color: #1f4172;
+                background-color: #D0F0C0;
+                color: #006B60;
                 font-size: 1.1em;
                 text-align: center;
             }
@@ -2215,7 +2293,7 @@ function formatStatsForPDF(stats) {
             ${Object.entries(stats).map(([key, value]) => `
                 <div style="background: white; padding: 10px; border-radius: 4px; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
                     <div style="color: #666; font-size: 0.9em;">${key}</div>
-                    <div style="color: #1f4172; font-size: 1.2em; font-weight: 600;">${value}</div>
+                    <div style="color: #006B60; font-size: 1.2em; font-weight: 600;">${value}</div>
                 </div>
             `).join('')}
         </div>
@@ -2289,7 +2367,7 @@ function exportChartToExcel() {
         // Add style to header cells
         const headerStyle = {
             font: { bold: true, color: { rgb: "FFFFFF" } },
-            fill: { fgColor: { rgb: "4F81BD" } },
+            fill: { fgColor: { rgb: "9CD49F" } },
             alignment: { horizontal: "center" }
         };
         
@@ -2318,12 +2396,12 @@ function getExcelStyles() {
     return {
         header: {
             font: { bold: true, color: { rgb: "FFFFFF" } },
-            fill: { fgColor: { rgb: "4F81BD" } },
+            fill: { fgColor: { rgb: "9CD49F" } },
             alignment: { horizontal: "center" }
         },
         subheader: {
             font: { bold: true },
-            fill: { fgColor: { rgb: "B8CCE4" } },
+            fill: { fgColor: { rgb: "D0F0C0" } },
             alignment: { horizontal: "center" }
         },
         cell: {
@@ -2336,7 +2414,7 @@ function getExcelStyles() {
             }
         },
         alternateRow: {
-            fill: { fgColor: { rgb: "EDF3F9" } }
+            fill: { fgColor: { rgb: "EEF4EB" } }
         }
     };
 }
