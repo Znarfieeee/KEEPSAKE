@@ -255,10 +255,12 @@ def pat_info(patient_id):
                     'left_hand': "POSITIVE" if row.get('POS_CCHD_LHAND', 0) == 1 else "NEGATIVE"
                 })
 
+    vaccines = get_vaccines_for_patient(patient_id)  # Fetch vaccines for the patient
+    print("Vaccines:", vaccines)  # Debugging line
     return render_template("pat_info.html", patient=patient, age=age, 
                            dr_name=dr_name, spclty=spclty, 
                            test_data=test_data, htest=htest,
-                           ptest=ptest)
+                           ptest=ptest, vaccines=vaccines)
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -1100,6 +1102,125 @@ def all_patients_tab():
                          patients=all_patients_records,
                          dr_name=session.get('dr_name', ''),
                          spclty=session.get('spclty', ''))
+
+@app.route("/add_vax", methods=["POST"])
+def add_vax():
+    if not session.get('logged_in'):
+        return redirect(url_for('login'))
+    
+    try:
+        pt_id = request.form.get('pt_id')
+        vaccine = request.form.get('vaccine')
+        total_doses = int(request.form.get('dosage', 0))
+        date = request.form.get('date1')
+        remarks = request.form.get('remarks', '')
+        user = session.get('user', {})
+        dr_id = user.get('EMP_ID')
+
+        # First check if this record exists in the database
+        check_sql = """
+            SELECT COUNT(*) as count, MAX(DOSAGE) as current_doses
+            FROM IMMUNIZATION_RECORD 
+            WHERE PT_ID = ? AND VAX = ? AND [DATE] IS NOT NULL
+        """
+        result = getallprocess(check_sql, (pt_id, vaccine.strip().upper() if vaccine else ''))
+        is_edit = result[0]['count'] > 0
+        current_doses = result[0]['current_doses'] or 0
+
+        if is_edit:
+            # For editing, only validate the date field
+            if not date:
+                flash("Please enter the vaccination date.", "error")
+                return redirect(url_for('pat_info', patient_id=pt_id))
+                
+            next_dose = current_doses + 1
+            if next_dose <= total_doses:
+                sql = """
+                    INSERT INTO IMMUNIZATION_RECORD (VAX, DOSAGE, [DATE], REMARKS, PT_ID, DR_ID)
+                    VALUES (?, ?, ?, ?, ?, ?);
+                    DECLARE @VAX_ID INT = SCOPE_IDENTITY();
+                    INSERT INTO PATIENT_IMMUNIZATION (PT_ID, VAX_ID) VALUES (?, @VAX_ID);
+                """
+                postprocess(sql, (vaccine.strip().upper(), next_dose, date, remarks or '', pt_id, dr_id, pt_id))
+                flash("Additional vaccination date added successfully!", "success")
+        else:
+            # For new records, validate all required fields
+            if not all([pt_id, vaccine, total_doses, date, dr_id]):
+                flash("Please fill in all required fields.", "error")
+                return redirect(url_for('pat_info', patient_id=pt_id))
+
+            sql = """
+                INSERT INTO IMMUNIZATION_RECORD (VAX, DOSAGE, [DATE], REMARKS, PT_ID, DR_ID)
+                VALUES (?, ?, ?, ?, ?, ?);
+                DECLARE @VAX_ID INT = SCOPE_IDENTITY();
+                INSERT INTO PATIENT_IMMUNIZATION (PT_ID, VAX_ID) VALUES (?, @VAX_ID);
+            """
+            postprocess(sql, (vaccine.strip().upper(), total_doses, date, remarks or '', pt_id, dr_id, pt_id))
+            flash("Vaccination record added successfully!", "success")
+
+    except Exception as e:
+        flash(f"Error processing vaccination record: {str(e)}", "error")
+    
+    return redirect(url_for('pat_info', patient_id=pt_id))
+    
+
+@app.route("/update_vaccine", methods=["POST"])
+def update_vaccine():
+    if not session.get('logged_in'):
+        return redirect(url_for('login'))
+    
+    try:
+        pt_id = request.form.get('pt_id')
+        vaccine_name = request.form.get('vaccine_name')
+        next_dose_date = request.form.get('next_dose_date')
+        remarks = request.form.get('remarks')
+        
+        # Get the current doctor's ID from the session
+        dr_id = session.get('user', {}).get('EMP_ID')
+        
+        if all([pt_id, vaccine_name, dr_id]):
+            # Get current dose number
+            current_doses = int(get_current_doses(pt_id, vaccine_name))
+            
+            # Insert remaining doses
+            for i in range(current_doses + 1, 4):  # Max 3 doses
+                dose_date = request.form.get(f'dose_date_{i}')
+                dose_remarks = request.form.get(f'dose_remarks_{i}')
+                
+                if dose_date:  # Only insert if date is provided
+                    sql = """
+                        INSERT INTO IMMUNIZATION_RECORD (VAX, DOSAGE, [DATE], REMARKS, PT_ID, DR_ID)
+                        VALUES (?, ?, ?, ?, ?, ?)
+                    """
+                    postprocess(sql, (vaccine_name, i, dose_date, dose_remarks, pt_id, dr_id))
+            
+            flash("Vaccine dose added successfully!", "success")
+        else:
+            flash("Missing required information.", "error")
+            
+    except Exception as e:
+        flash(f"Error updating vaccine: {str(e)}", "error")
+    
+    return redirect(url_for('pat_info', patient_id=pt_id))
+
+@app.route('/get_vaccine_dates/<vaccine_name>/<int:patient_id>')
+def get_vaccine_dates(vaccine_name, patient_id):
+    if not session.get('logged_in'):
+        return jsonify({'error': 'Not authenticated'}), 401
+    
+    sql = """
+    SELECT DOSAGE, [DATE], REMARKS
+    FROM IMMUNIZATION_RECORD
+    WHERE PT_ID = ? AND VAX = ?
+    ORDER BY DOSAGE
+    """
+    
+    try:
+        doses = getallprocess(sql, (patient_id, vaccine_name))
+        return jsonify(doses)
+    except Exception as e:
+        print(f"Error fetching vaccine dates: {e}")
+        return jsonify({'error': 'Failed to fetch vaccine dates'}), 500
 
 if __name__ == '__main__':
     app.run(debug=True)
