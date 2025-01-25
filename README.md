@@ -1,1 +1,1 @@
-znarfieeee.git.io
+znarfieeee.github.io
